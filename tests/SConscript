@@ -1,0 +1,13 @@
+# -*- python -*-
+Import("env")
+
+env.Program(["Footprint_1.cc"], LIBS=env.getlibs("fw", "detection"))
+#
+# Tests
+#
+import lsst.tests
+tests = lsst.tests.Control(env)
+
+tests.run("*.cc")
+for target in tests.run("*.py"):
+    env.Depends(target, "../python/lsst/detection/_detectionLib%s" % (env['LDMODULESUFFIX']))

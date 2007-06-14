@@ -1,0 +1,8 @@
+# -*- python -*-
+Import('env')
+
+env.SharedLibrary(env['eups_product'], map(lambda str: "../src/" + str,
+                                           ["Footprint.cc",
+                                            "Peak.cc",
+                                            ]), LIBS=env.libs["fw"])
+
