@@ -6,7 +6,6 @@
 #include <list>
 #include <cmath>
 #include <boost/shared_ptr.hpp>
-#include <lsst/fw/LsstBase.h>
 #include <lsst/fw/MaskedImage.h>
 #include <lsst/detection/Peak.h>
 

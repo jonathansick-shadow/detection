@@ -6,8 +6,8 @@
 #include <string>
 #include <typeinfo>
 #include <boost/format.hpp>
-#include "lsst/fw/Trace.h"
-#include "lsst/fw/Exception.h"
+#include "lsst/mwi/utils/Trace.h"
+#include "lsst/mwi/exceptions/Exception.h"
 #include "lsst/detection/Peak.h"
 #include "lsst/detection/Footprint.h"
 

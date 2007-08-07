@@ -2,8 +2,7 @@
 Import("env")
 import lsst.SConsUtils as scons
 
-env.CheckSwig("python", ilang="c++")
-env['SWIGFLAGS'] += " -I%s/python" % scons.productDir("fw") # allow swig to find files in fw/python
+env.CheckSwig("python", ilang="c++", includedProducts="mwi fw")
 
 env.LoadableModuleIncomplete("_detectionLib", Split("detectionLib.i"),
-                             LIBS=env.getlibs("vw", "fw", "detection"))
+                             LIBS=env.getlibs("vw fw detection"))

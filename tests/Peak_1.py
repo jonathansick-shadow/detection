@@ -10,7 +10,8 @@ or
 
 import pdb                              # we may want to say pdb.set_trace()
 import unittest
-import lsst.fw.Core.tests as tests
+import lsst.mwi.tests as tests
+import lsst.mwi.utils as mwiu
 import lsst.fw.Core.fwLib as fw
 import lsst.detection.detectionLib as detection
 
@@ -18,8 +19,7 @@ try:
     type(verbose)
 except NameError:
     verbose = 0
-    fw.Trace_setVerbosity("detection.Footprint", verbose)
-
+    mwiu.Trace_setVerbosity("detection.Footprint", verbose)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 

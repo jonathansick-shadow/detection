@@ -11,11 +11,15 @@ env = scons.makeEnv("detection",
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
                      ["vw", "vw/Core.h", "vw:C++"],
                      ["python", "Python.h"],
-		     ["cfitsio", "fitsio.h", "m cfitsio", "ffopen"],
-                     ["wcstools", "wcs.h", "wcs", "wcscat"],
+		     ["m", "math.h", "m", "sqrt"],
+		     ["cfitsio", "fitsio.h", "cfitsio", "ffopen"],
+                     ["wcslib", "wcslib/wcs.h", "wcs"],
                      ["xpa", "xpa.h", "xpa", "XPAPuts"],
-                     ["fw", "lsst/fw/MaskedImage.h", "fw:C++"],
+                     ["mwi", "lsst/mwi/data.h", "mwi:C++"],
+                     ["fw", "lsst/fw/MaskedImage.h", "fw"],
                      ])
+
+env.libs["detection"] +=  env.getlibs("mwi fw boost wcslib")
 #
 # Build/install things
 #

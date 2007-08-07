@@ -4,21 +4,20 @@
 #include <list>
 #include <cmath>
 #include <boost/shared_ptr.hpp>
-#include <lsst/fw/LsstBase.h>
-#include <lsst/detection/Peak.h>
+#include <lsst/mwi/data/LsstBase.h>
 
 namespace lsst { namespace detection {
 
-class Peak : private lsst::fw::Citizen {
+class Peak : private lsst::mwi::data::Citizen {
 public:
     explicit Peak(int ix,               //!< column pixel
                   int iy)               //!< row pixel
-        : lsst::fw::Citizen(typeid(*this)),
+        : lsst::mwi::data::Citizen(typeid(*this)),
           _id(++id),
           _ix(ix), _iy(iy), _fx(ix), _fy(iy) {};
     explicit Peak(float fx = NAN,       //!< column centre
                   float fy = NAN)       //!< row centre
-        : lsst::fw::Citizen(typeid(*this)),
+        : lsst::mwi::data::Citizen(typeid(*this)),
           _id(++id),
           _ix(fx > 0 ? static_cast<int>(fx) : -static_cast<int>(-fx) - 1),
           _iy(fy > 0 ? static_cast<int>(fy) : -static_cast<int>(-fy) - 1),

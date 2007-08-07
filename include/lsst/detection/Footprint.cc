@@ -1,8 +1,8 @@
 using namespace lsst::detection;
 #include <cassert>
 #include <algorithm>
-#include <lsst/fw/DataProperty.h>
-#include <lsst/fw/Exception.h>
+#include <lsst/mwi/data/DataProperty.h>
+#include <lsst/mwi/exceptions/Exception.h>
 
 /************************************************************************************************************/
 

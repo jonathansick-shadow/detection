@@ -31,7 +31,8 @@ using namespace vw;
 %init %{
 %}
 
-%include "lsst/fw/Core/p_lsstSwig.i"
+%include "lsst/mwi/p_lsstSwig.i"
+%include "lsst/fw/Core/lsstImageTypes.i"     // vw and Image/Mask types and typedefs
 
 %pythoncode %{
 def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python/lsst/fw/Core/detectionLib.i $"):
@@ -78,9 +79,9 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 
 /******************************************************************************/
 // Citizens, Trace, etc.
-%include "lsst/fw/Citizen.h"
-%include "lsst/fw/Trace.h"
-%include "lsst/fw/DataProperty.h"
+%include "lsst/mwi/data/Citizen.h"
+%include "lsst/mwi/utils/Trace.h"
+%include "lsst/msi/data/DataProperty.h"
 
 #if 0                                   // doesn't work (yet)
 typedef boost::shared_ptr<DataProperty> DataPropertyPtr;
@@ -151,6 +152,8 @@ ensure:
 %template(MaskIVwPtrT) boost::shared_ptr<vw::ImageView<MaskPixelType> >;
 
 %pythoncode %{
+from lsst.mwi.utils import Trace
+    
 def ImageMaskPtr(*args):
     """Return an MaskIVwPtrT that owns its ImageMask"""
 

@@ -1,7 +1,7 @@
 # -*- python -*-
 Import("env")
 
-env.Program(["Footprint_1.cc"], LIBS=env.getlibs("fw", "detection"))
+env.Program(["Footprint_1.cc"], LIBS=env.getlibs("detection"))
 #
 # Tests
 #
