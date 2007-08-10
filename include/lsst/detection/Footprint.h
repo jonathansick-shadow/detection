@@ -15,7 +15,7 @@ class Footprint;
 
 class Span {
 public:
-    typedef boost::shared_ptr<Span> SpanPtrT;
+    typedef boost::shared_ptr<Span> PtrType;
 
     Span(int y,                         //!< Row that span's in
          int x0,                        //!< Starting column (inclusive)
@@ -39,18 +39,20 @@ private:
     int _x1;                            //!< Ending column (inclusive)
 };
 
-typedef boost::shared_ptr<Span> SpanPtrT;
+//typedef boost::shared_ptr<Span> PtrType;
 
 /************************************************************************************************************/
 
 class Footprint : private lsst::fw::LsstBase {
 public:
+    typedef boost::shared_ptr<Footprint> PtrType;
+
     Footprint(int nspan = 0, const vw::BBox2i region = vw::BBox2i(0, 0, 0, 0));
     ~Footprint();
 
     int getId() { return _id; }         //!< Return the footprint's unique ID
-    std::vector<SpanPtrT> &getSpans() { return _spans; } //!< return the Spans contained in this Footprint
-    std::vector<PeakPtrT> &getPeaks() { return _peaks; } //!< Return the Peaks contained in this Footprint
+    std::vector<Span::PtrType> &getSpans() { return _spans; } //!< return the Spans contained in this Footprint
+    std::vector<Peak::PtrType> &getPeaks() { return _peaks; } //!< Return the Peaks contained in this Footprint
     int getNpix() { return _npix; }     //!< Return the number of pixels in this Footprint
 
     const Span& addSpan(const int y, const int x0, const int x1);
@@ -69,14 +71,12 @@ private:
     mutable int _id;                    //!< unique ID
     int _npix;                          //!< number of pixels in this Footprint
     
-    std::vector<SpanPtrT> &_spans;        //!< the Spans contained in this Footprint
+    std::vector<Span::PtrType> &_spans; //!< the Spans contained in this Footprint
     vw::BBox2i _bbox;                   //!< the Footprint's bounding box
-    std::vector<PeakPtrT> &_peaks;        //!< the Peaks lying in this footprint
+    std::vector<Peak::PtrType> &_peaks; //!< the Peaks lying in this footprint
     const vw::BBox2i _region;           //!< The corners of the MaskedImage the footprints live in
     bool _normalized;                   //!< Are the spans sorted? 
 };
-
-typedef boost::shared_ptr<Footprint> FootprintPtrT;
 
 /************************************************************************************************************/
     
@@ -97,7 +97,7 @@ public:
                  const int includePeaks);
     ~DetectionSet();
 
-    std::vector<FootprintPtrT>& getFootprints() { return _footprints; } //!< Retun the Footprints of detected objects
+    std::vector<Footprint::PtrType>& getFootprints() { return _footprints; } //!< Retun the Footprints of detected objects
     const vw::BBox2i& getRegion() const { return _region; } //!< Return the corners of the MaskedImage
 
 #if 0                                   // these are equivalent, but the former confuses swig
@@ -106,7 +106,7 @@ public:
     typename boost::shared_ptr<lsst::fw::Image<int> > insertIntoImage(const bool relativeIDs);
 #endif
 private:
-    std::vector<FootprintPtrT>& _footprints;  //!< the Footprints of detected objects
+    std::vector<Footprint::PtrType>& _footprints;  //!< the Footprints of detected objects
     const vw::BBox2i _region;           //!< The corners of the MaskedImage that the detections live in
 };
 

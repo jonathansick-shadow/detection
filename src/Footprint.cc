@@ -60,9 +60,9 @@ Footprint::Footprint(int nspan,         //!< initial number of spans in this Foo
     : lsst::fw::LsstBase(typeid(this)),
       _id(++id),
       _npix(0),
-      _spans(*new std::vector<SpanPtrT>),
+      _spans(*new std::vector<Span::PtrType>),
       _bbox(vw::BBox2i()),
-      _peaks(*new std::vector<PeakPtrT>),
+      _peaks(*new std::vector<Peak::PtrType>),
       _region(region),
       _normalized(false) {
     if (nspan < 0) {
@@ -96,7 +96,7 @@ const Span& Footprint::addSpan(const int y, //!< row to add
         return this->addSpan(y, x1, x0);
     }
 
-    SpanPtrT sp(new Span(y, x0, x1));
+    Span::PtrType sp(new Span(y, x0, x1));
     _spans.push_back(sp);
     
     _npix += x1 - x0 + 1;
@@ -116,16 +116,16 @@ void Footprint::setBBox() {
 	return;
     }
 
-    std::vector<SpanPtrT>::const_iterator spi;
+    std::vector<Span::PtrType>::const_iterator spi;
     spi = _spans.begin();
-    const SpanPtrT sp = *spi;
+    const Span::PtrType sp = *spi;
     int x0 = sp->_x0;
     int x1 = sp->_x1;
     int y0 = sp->_y;
     int y1 = sp->_y;
     
     for (; spi != _spans.end(); spi++) {
-        const SpanPtrT sp = *spi;
+        const Span::PtrType sp = *spi;
 	if (sp->_x0 < x0) x0 = sp->_x0;
 	if (sp->_x1 > x1) x1 = sp->_x1;
 	if (sp->_y < y0) y0 = sp->_y;
@@ -140,8 +140,8 @@ void Footprint::setBBox() {
  */
 int Footprint::setNpix() {
     _npix = 0;
-    for (std::vector<SpanPtrT>::const_iterator spi = _spans.begin(); spi != _spans.end(); spi++) {
-        const SpanPtrT sp = *spi;
+    for (std::vector<Span::PtrType>::const_iterator spi = _spans.begin(); spi != _spans.end(); spi++) {
+        const Span::PtrType sp = *spi;
         _npix += sp->_x1 - sp->_x0 + 1;
    }
 
@@ -163,8 +163,8 @@ void Footprint::insertIntoImage(lsst::fw::Image<int>& idImage, //!< Image to con
 
     typedef lsst::fw::Image<int>::pixel_accessor pixAccessT;
 
-    for (std::vector<SpanPtrT>::const_iterator spi = _spans.begin(); spi != _spans.end(); spi++) {
-        const SpanPtrT span = *spi;
+    for (std::vector<Span::PtrType>::const_iterator spi = _spans.begin(); spi != _spans.end(); spi++) {
+        const Span::PtrType span = *spi;
 
         pixAccessT spanPtr = idImage.origin().advance(span->getX0(), span->getY() - row0);
         for (int x = span->getX0() - col0; x <= span->getX1() - col0; x++, spanPtr.next_col()) {

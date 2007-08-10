@@ -158,6 +158,7 @@ class DetectionSetTestCase(unittest.TestCase):
         #pdb.set_trace()
         for i in range(len(objects)):
             for sp in objects[i].getSpans():
+                print "RHL", sp
                 for x in range(sp.getX0(), sp.getX1() + 1):
                     self.assertEqual(ord(m.getPtr(x, sp.getY())), 1)
 

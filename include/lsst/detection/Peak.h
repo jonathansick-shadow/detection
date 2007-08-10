@@ -10,6 +10,8 @@ namespace lsst { namespace detection {
 
 class Peak : private lsst::mwi::data::Citizen {
 public:
+    typedef boost::shared_ptr<Peak> PtrType;
+
     explicit Peak(int ix,               //!< column pixel
                   int iy)               //!< row pixel
         : lsst::mwi::data::Citizen(typeid(*this)),
@@ -41,8 +43,6 @@ private:
     float _fx;                          //!< column-position of peak
     float _fy;                          //!< row-position of peak
 };
-
-typedef boost::shared_ptr<Peak> PeakPtrT;
 
 }}
 #endif

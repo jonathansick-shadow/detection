@@ -20,18 +20,18 @@ namespace {
  */
     class IdSpan {
     public:
+        typedef boost::shared_ptr<IdSpan> PtrType;
+        
         explicit IdSpan(int id, int y, int x0, int x1) : id(id), y(y), x0(x0), x1(x1) {}
         int id;                         /* ID for object */
         int y;				/* Row wherein IdSpan dwells */
         int x0, x1;                     /* inclusive range of columns */
     };
-
-    typedef boost::shared_ptr<IdSpan> IdSpanPtrT;
 /*
  * comparison functor; sort by ID then row
  */
-    struct IdSpanCompar : public binary_function<const IdSpanPtrT, const IdSpanPtrT, bool> {
-        bool operator()(const IdSpanPtrT a, const IdSpanPtrT b) {
+    struct IdSpanCompar : public binary_function<const IdSpan::PtrType, const IdSpan::PtrType, bool> {
+        bool operator()(const IdSpan::PtrType a, const IdSpan::PtrType b) {
             if(a->id < b->id) {
                 return true;
             } else if(a->id > b->id) {
@@ -70,7 +70,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::~DetectionSet() {
  *
  * Go through an image, finding sets of connected pixels above threshold
  * and assembling them into Footprints;  the resulting set of objects
- * is returned as an array<FootprintPtrT>
+ * is returned as an array<Footprint::PtrType>
  */
 template<typename ImagePixelType, typename MaskPixelType>
 DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
@@ -79,7 +79,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
         const std::string& planeName,   //!< mask plane to set (if != "")
         const int npixMin)              //!< minimum number of pixels in an object
     : lsst::fw::LsstBase(typeid(this)),
-      _footprints(*new std::vector<FootprintPtrT>()),
+      _footprints(*new std::vector<Footprint::PtrType>()),
       _region(*new vw::BBox2i(maskedImg.getOffsetCols(),
                               maskedImg.getOffsetRows(),
                               maskedImg.getOffsetCols() + maskedImg.getCols() - 1,
@@ -109,7 +109,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
     std::vector<int> aliases;           // aliases for initially disjoint parts of Footprints
     aliases.reserve(1 + numRows/20);	// initial size of aliases
 
-    std::vector<IdSpanPtrT> spans;      // row:x0,x1 for objects
+    std::vector<IdSpan::PtrType> spans; // row:x0,x1 for objects
     spans.reserve(aliases.capacity());	// initial size of spans
 
     aliases.push_back(0);               // 0 --> 0
@@ -138,7 +138,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
             if (pixVal < threshold) {
                 if (in_span) {
                     IdSpan *sp = new IdSpan(in_span, y, x0, x - 1);
-                    IdSpanPtrT spp(sp);
+                    IdSpan::PtrType spp(sp);
                     spans.push_back(spp);
 
                     in_span = 0;
@@ -174,7 +174,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
 
         if(in_span) {
             IdSpan *sp = new IdSpan(in_span, y, x0, numCols - 1);
-            IdSpanPtrT spp(sp);
+            IdSpan::PtrType spp(sp);
             spans.push_back(spp);
         }
     }
@@ -208,7 +208,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
                 if (fp->getNpix() < npixMin) {
                     delete fp;
                 } else {
-                    lsst::detection::FootprintPtrT fpp(fp);
+                    lsst::detection::Footprint::PtrType fpp(fp);
                     _footprints.push_back(fpp);
                 }
             }
@@ -244,12 +244,12 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
     //
     typedef typename lsst::fw::Mask<MaskPixelType>::pixel_accessor maskPixAccessT;
 
-    for (std::vector<FootprintPtrT>::const_iterator fiter = _footprints.begin(); fiter != _footprints.end(); fiter++) {
-        const FootprintPtrT foot = *fiter;
+    for (std::vector<Footprint::PtrType>::const_iterator fiter = _footprints.begin(); fiter != _footprints.end(); fiter++) {
+        const Footprint::PtrType foot = *fiter;
 
-        for (std::vector<SpanPtrT>::const_iterator siter = foot->getSpans().begin();
+        for (std::vector<Span::PtrType>::const_iterator siter = foot->getSpans().begin();
              siter != foot->getSpans().end(); siter++) {
-            const SpanPtrT span = *siter;
+            const Span::PtrType span = *siter;
             maskPixAccessT spanPtr = mask->origin().advance(span->getX0(), span->getY());
             for (int x = span->getX0(); x <= span->getX1(); x++, spanPtr.next_col()) {
                 *spanPtr |= bitPlane;
@@ -270,7 +270,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
         int y,                          //!< Footprint should include this pixel (row) 
         const vector<Peak> *peaks)        //!< Footprint should include at most one of these peaks
     : lsst::fw::LsstBase(typeid(this)),
-      _footprints(*new std::vector<FootprintPtrT>())
+      _footprints(*new std::vector<Footprint::PtrType>())
     {
 }
 
@@ -676,7 +676,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
 	const DetectionSet &set,
         int r)                          //!< Grow Footprints by r pixels
     : lsst::fw::LsstBase(typeid(this)),
-      _footprints(*new std::vector<FootprintPtrT>()) {
+      _footprints(*new std::vector<Footprint::PtrType>()) {
 }
 
 /************************************************************************************************************/
@@ -688,7 +688,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
 	const DetectionSet &footprints1, const DetectionSet &footprints2,
         const int includePeaks)
     : lsst::fw::LsstBase(typeid(this)),
-      _footprints(*new std::vector<FootprintPtrT>())
+      _footprints(*new std::vector<Footprint::PtrType>())
     {
 }
 
@@ -704,8 +704,8 @@ typename lsst::fw::Image<int>::ImagePtrT DetectionSet<ImagePixelType, MaskPixelT
     typename lsst::fw::Image<int>::ImagePtrT im(new lsst::fw::Image<int>(ncols, nrows));
 
     int id = 0;
-    for (std::vector<FootprintPtrT>::const_iterator fiter = _footprints.begin(); fiter != _footprints.end(); fiter++) {
-        const lsst::detection::FootprintPtrT foot = *fiter;
+    for (std::vector<Footprint::PtrType>::const_iterator fiter = _footprints.begin(); fiter != _footprints.end(); fiter++) {
+        const lsst::detection::Footprint::PtrType foot = *fiter;
         
         if (relativeIDs) {
             id++;
