@@ -1,8 +1,16 @@
-using namespace lsst::detection;
-#include <cassert>
 #include <algorithm>
+#include <cassert>
+#include <string>
+#include <typeinfo>
+#include <boost/format.hpp>
 #include <lsst/mwi/data/DataProperty.h>
-#include <lsst/mwi/exceptions/Exception.h>
+#include "lsst/mwi/exceptions/Exception.h"
+#include "lsst/mwi/utils/Trace.h"
+
+#include "lsst/detection/Peak.h"
+#include "lsst/detection/Footprint.h"
+
+using namespace lsst::detection;
 
 /************************************************************************************************************/
 
@@ -710,3 +718,9 @@ typename lsst::fw::Image<int>::ImagePtrT DetectionSet<ImagePixelType, MaskPixelT
     
     return im;
 }
+
+/************************************************************************************************************/
+//
+// Implicit instantiations
+//
+template class DetectionSet<float, unsigned char>;

@@ -121,6 +121,5 @@ psErrorCode pmFootprintCullPeaks(const psImage *img, const psImage *weight, pmFo
 psArray *pmFootprintArrayToPeaks(const psArray *footprints);
 #endif
 
-#include "Footprint.cc"
 }}
 #endif

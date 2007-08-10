@@ -4,7 +4,7 @@ using namespace lsst::fw;
 using namespace lsst::detection;
 
 typedef float ImagePixelT;
-typedef char MaskPixelT;
+typedef unsigned char MaskPixelT;
 
 int main() {
     MaskedImage<ImagePixelT, MaskPixelT> img(10,20);
