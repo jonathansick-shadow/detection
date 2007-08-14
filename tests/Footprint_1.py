@@ -21,6 +21,11 @@ except NameError:
     verbose = 0
     mwiu.Trace_setVerbosity("detection.Footprint", verbose)
 
+try:
+    type(display)
+except NameError:
+    display = False
+
 def toString(*args):
     """toString written in python"""
     if len(args) == 1:
@@ -121,9 +126,9 @@ class DetectionSetTestCase(unittest.TestCase):
         for obj in self.objects:
             obj.insert(im)
 
-        if False:
+        if display:
             import lsst.fw.Display.ds9 as ds9
-            ds9.mtv(im)
+            ds9.mtv(im, frame=0)
         
     def tearDown(self):
         del self.ms
@@ -151,14 +156,13 @@ class DetectionSetTestCase(unittest.TestCase):
         m = self.ms.getMask()
         bitPlane = m.getPlaneBitMask("OBJECT")
 
-        if not True:
+        if display:
             import lsst.fw.Display.ds9 as ds9
-            ds9.mtv(m)
+            ds9.mtv(m, frame=1)
 
         #pdb.set_trace()
         for i in range(len(objects)):
             for sp in objects[i].getSpans():
-                print "RHL", sp
                 for x in range(sp.getX0(), sp.getX1() + 1):
                     self.assertEqual(ord(m.getPtr(x, sp.getY())), 1)
 
@@ -173,9 +177,9 @@ class DetectionSetTestCase(unittest.TestCase):
         for foot in objects:
             foot.insertIntoImage(idImage, foot.getId())
 
-        if not True:
+        if False:
             import lsst.fw.Display.ds9 as ds9
-            ds9.mtv(idImage)
+            ds9.mtv(idImage, frame=2)
 
         for i in range(len(objects)):
             for sp in objects[i].getSpans():
@@ -190,9 +194,9 @@ class DetectionSetTestCase(unittest.TestCase):
 
         idImage = ds.insertIntoImage(True)
 
-        if not True:
+        if display:
             import lsst.fw.Display.ds9 as ds9
-            ds9.mtv(idImage)
+            ds9.mtv(idImage, frame=2)
 
         for i in range(len(objects)):
             for sp in objects[i].getSpans():
