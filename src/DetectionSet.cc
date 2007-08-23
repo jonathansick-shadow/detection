@@ -75,7 +75,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::~DetectionSet() {
 template<typename ImagePixelType, typename MaskPixelType>
 DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
 	const lsst::fw::MaskedImage<ImagePixelType, MaskPixelType> &maskedImg, //!< MaskedImage to search for objects
-        const float threshold,          //!< threshold to find objects
+        const float threshold,          //!< threshold to find objects (DN)
         const std::string& planeName,   //!< mask plane to set (if != "")
         const int npixMin)              //!< minimum number of pixels in an object
     : lsst::fw::LsstBase(typeid(this)),
