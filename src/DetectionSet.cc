@@ -78,7 +78,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
         const Threshold& threshold,     //!< threshold to find objects
         const std::string& planeName,   //!< mask plane to set (if != "")
         const int npixMin)              //!< minimum number of pixels in an object
-    : lsst::fw::LsstBase(typeid(this)),
+    : lsst::mwi::data::LsstBase(typeid(this)),
       _footprints(*new std::vector<Footprint::PtrType>()),
       _region(*new vw::BBox2i(maskedImg.getOffsetCols(),
                               maskedImg.getOffsetRows(),
@@ -234,7 +234,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
         mask->getMaskPlane(planeName, bitPlaneID);
         throw lsst::mwi::exceptions::InvalidParameter("Requested Mask plane is already allocated")
             << lsst::mwi::data::DataProperty("Plane", planeName);
-    } catch (lsst::fw::NoMaskPlane) {
+    } catch (lsst::mwi::exceptions::NoMaskPlane) {
         mask->addMaskPlane(planeName);
     }
 
@@ -270,7 +270,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
         int x,                          //!< Footprint should include this pixel (column)
         int y,                          //!< Footprint should include this pixel (row) 
         const vector<Peak> *peaks)        //!< Footprint should include at most one of these peaks
-    : lsst::fw::LsstBase(typeid(this)),
+    : lsst::mwi::data::LsstBase(typeid(this)),
       _footprints(*new std::vector<Footprint::PtrType>())
     {
 }
@@ -676,7 +676,7 @@ template<typename ImagePixelType, typename MaskPixelType>
 DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
 	const DetectionSet &set,
         int r)                          //!< Grow Footprints by r pixels
-    : lsst::fw::LsstBase(typeid(this)),
+    : lsst::mwi::data::LsstBase(typeid(this)),
       _footprints(*new std::vector<Footprint::PtrType>()) {
 }
 
@@ -688,7 +688,7 @@ template<typename ImagePixelType, typename MaskPixelType>
 DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
 	const DetectionSet &footprints1, const DetectionSet &footprints2,
         const int includePeaks)
-    : lsst::fw::LsstBase(typeid(this)),
+    : lsst::mwi::data::LsstBase(typeid(this)),
       _footprints(*new std::vector<Footprint::PtrType>())
     {
 }

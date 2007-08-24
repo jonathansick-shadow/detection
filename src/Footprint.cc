@@ -57,7 +57,7 @@ int Footprint::id = 0;                  //!< Counter for Footprint IDs
  */
 Footprint::Footprint(int nspan,         //!< initial number of spans in this Footprint
                      const vw::BBox2i region) //!< Bounding box of MaskedImage footprint lives in
-    : lsst::fw::LsstBase(typeid(this)),
+    : lsst::mwi::data::LsstBase(typeid(this)),
       _id(++id),
       _npix(0),
       _spans(*new std::vector<Span::PtrType>),
@@ -66,7 +66,7 @@ Footprint::Footprint(int nspan,         //!< initial number of spans in this Foo
       _region(region),
       _normalized(false) {
     if (nspan < 0) {
-        throw lsst::fw::InvalidParameter(boost::format("Number of spans requested is -ve: %d") % nspan);
+        throw lsst::mwi::exceptions::InvalidParameter(boost::format("Number of spans requested is -ve: %d") % nspan);
     }
     _npix = 0;
 }

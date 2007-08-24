@@ -88,7 +88,7 @@ private:
 
 /************************************************************************************************************/
 
-class Footprint : private lsst::fw::LsstBase {
+class Footprint : private lsst::mwi::data::LsstBase {
 public:
     typedef boost::shared_ptr<Footprint> PtrType;
 
@@ -126,7 +126,7 @@ private:
 /************************************************************************************************************/
     
 template<typename ImagePixelT, typename MaskPixelT>
-class DetectionSet : private lsst::fw::LsstBase {
+class DetectionSet : private lsst::mwi::data::LsstBase {
 public:
     DetectionSet(const lsst::fw::MaskedImage<ImagePixelT, MaskPixelT> &img,
                  const Threshold& threshold,
