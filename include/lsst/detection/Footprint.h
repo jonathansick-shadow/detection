@@ -39,7 +39,52 @@ private:
     int _x1;                            //!< Ending column (inclusive)
 };
 
-//typedef boost::shared_ptr<Span> PtrType;
+/************************************************************************************************************/
+/**
+ * A Threshold is used to pass a threshold value to the DetectionSet constructors
+ *
+ * The threshold may be a simple value (type == VALUE), or in units of the image
+ * standard deviation; you may specify that you'll provide the standard deviation
+ * (type == STDEV) or variance (type == VARIANCE)
+ *
+ * Note that the constructor is not declared explicit, so you may pass a bare
+ * threshold, and it'll be interpreted as a VALUE.
+ */
+class Threshold {
+public:
+    typedef enum { VALUE, STDEV, VARIANCE } ThresholdType; //!< types of threshold:
+    ;                                   //!< pixel value, number of sigma given s.d.; number of sigma given variance
+
+    Threshold(const float value,        //!< desired value
+              const ThresholdType type = VALUE) : //!< interpretation of type
+        _value(value), _type(type) {}
+
+    //! return type of threshold
+    ThresholdType getType() const { return _type; }
+    //! return value of threshold, to be interpreted via type
+    float getValue(const float param = -1 //!< value of variance/stdev if needed
+                  ) const {
+        switch (_type) {
+          case STDEV:
+            if (param <= 0) {
+                throw lsst::mwi::exceptions::InvalidParameter(boost::format("St. dev. must be > 0: %g") % param);
+            }
+            return _value*param;
+          case VALUE:
+            return _value;
+          case VARIANCE:
+            if (param <= 0) {
+                throw lsst::mwi::exceptions::InvalidParameter(boost::format("Variance must be > 0: %g") % param);
+            }
+            return _value*sqrt(param);
+          default:
+            throw lsst::mwi::exceptions::InvalidParameter(boost::format("Unsopported type: %d") % _type);
+        }
+    } 
+private:
+    float _value;                       //!< value of threshold, to be interpreted via _type
+    ThresholdType _type;                //!< type of threshold
+};
 
 /************************************************************************************************************/
 
@@ -84,11 +129,11 @@ template<typename ImagePixelT, typename MaskPixelT>
 class DetectionSet : private lsst::fw::LsstBase {
 public:
     DetectionSet(const lsst::fw::MaskedImage<ImagePixelT, MaskPixelT> &img,
-                 const float threshold,
+                 const Threshold& threshold,
                  const std::string& planeName = "",
                  const int npixMin = 1);
     DetectionSet(const lsst::fw::MaskedImage<ImagePixelT, MaskPixelT> &img,
-                 const float threshold,
+                 const Threshold& threshold,
                  int x,
                  int y,
                  const vector<Peak> *peaks = NULL);

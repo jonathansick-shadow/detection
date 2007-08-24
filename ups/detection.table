@@ -1,3 +1,4 @@
+setupRequired(boost > v1.33.1)
 setupRequired(fw)
 
 envAppend(LD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)

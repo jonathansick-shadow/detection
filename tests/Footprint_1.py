@@ -137,11 +137,11 @@ class DetectionSetTestCase(unittest.TestCase):
         """Check that DetectionSets are automatically garbage collected (when MemoryTestCase runs)"""
         
         ms = fw.MaskedImageD(10, 20);
-        ds = detection.DetectionSetD(ms, 10)
+        ds = detection.DetectionSetD(ms, detection.Threshold(10))
 
     def testFootprints(self):
         """Check that we found the correct number of objects and that they are correct"""
-        ds = detection.DetectionSetD(self.ms, 10)
+        ds = detection.DetectionSetD(self.ms, detection.Threshold(10))
         objects = ds.getFootprints()
 
         self.assertEqual(len(objects), len(self.objects))
@@ -150,7 +150,7 @@ class DetectionSetTestCase(unittest.TestCase):
             
     def testFootprintsMasks(self):
         """Check that detectionSets have the proper mask bits set"""
-        ds = detection.DetectionSetD(self.ms, 10, "OBJECT")
+        ds = detection.DetectionSetD(self.ms, detection.Threshold(10), "OBJECT")
         objects = ds.getFootprints()
 
         m = self.ms.getMask()
@@ -168,7 +168,7 @@ class DetectionSetTestCase(unittest.TestCase):
 
     def testFootprintsImageId(self):
         """Check that we can insert footprints into an Image"""
-        ds = detection.DetectionSetD(self.ms, 10)
+        ds = detection.DetectionSetD(self.ms, detection.Threshold(10))
         objects = ds.getFootprints()
 
         idImage = fw.ImageInt(self.ms.getImage().getCols(), self.ms.getImage().getRows())
@@ -189,7 +189,7 @@ class DetectionSetTestCase(unittest.TestCase):
 
     def testDetectionSetImageId(self):
         """Check that we can insert a DetectionSet into an Image, setting relative IDs"""
-        ds = detection.DetectionSetD(self.ms, 10)
+        ds = detection.DetectionSetD(self.ms, detection.Threshold(10))
         objects = ds.getFootprints()
 
         idImage = ds.insertIntoImage(True)

@@ -75,7 +75,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::~DetectionSet() {
 template<typename ImagePixelType, typename MaskPixelType>
 DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
 	const lsst::fw::MaskedImage<ImagePixelType, MaskPixelType> &maskedImg, //!< MaskedImage to search for objects
-        const float threshold,          //!< threshold to find objects (DN)
+        const Threshold& threshold,     //!< threshold to find objects
         const std::string& planeName,   //!< mask plane to set (if != "")
         const int npixMin)              //!< minimum number of pixels in an object
     : lsst::fw::LsstBase(typeid(this)),
@@ -117,6 +117,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
  * Go through image identifying objects
  */
     typedef typename lsst::fw::Image<ImagePixelType>::pixel_accessor pixAccessT;
+    const float thresholdVal = threshold.getValue();
 
     pixAccessT rowPtr = img->origin();   // row pointer
     in_span = 0;			// not in a span
@@ -135,7 +136,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
         for (int x = 0; x < numCols; x++, pixPtr.next_col()) {
             ImagePixelType pixVal = *pixPtr;
 
-            if (pixVal < threshold) {
+            if (pixVal < thresholdVal) {
                 if (in_span) {
                     IdSpan *sp = new IdSpan(in_span, y, x0, x - 1);
                     IdSpan::PtrType spp(sp);
@@ -231,8 +232,8 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
     try {
         int bitPlaneID;
         mask->getMaskPlane(planeName, bitPlaneID);
-        throw lsst::fw::InvalidParameter("Requested Mask plane is already allocated")
-            << lsst::fw::DataProperty("Plane", planeName);
+        throw lsst::mwi::exceptions::InvalidParameter("Requested Mask plane is already allocated")
+            << lsst::mwi::data::DataProperty("Plane", planeName);
     } catch (lsst::fw::NoMaskPlane) {
         mask->addMaskPlane(planeName);
     }
@@ -265,7 +266,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
 template<typename ImagePixelType, typename MaskPixelType>
 DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
 	const lsst::fw::MaskedImage<ImagePixelType, MaskPixelType> &img, //!< Image to search for objects
-        const float threshold,          //!< threshold to find objects
+        const Threshold& threshold,          //!< threshold to find objects
         int x,                          //!< Footprint should include this pixel (column)
         int y,                          //!< Footprint should include this pixel (row) 
         const vector<Peak> *peaks)        //!< Footprint should include at most one of these peaks
@@ -347,7 +348,7 @@ namespace {
 
         bool add(Span *span, const DIRECTION dir, bool addToMask = true);
         bool process(Footprint *fp,     // the footprint that we're building
-                     const float threshold);	// Threshold
+                     const Threshold& threshold);	// Threshold
     private:
         const lsst::fw::Image<ImagePixelType> *_image; // the Image we're searching
         lsst::fw::Mask<MaskPixelType> *_mask; // the mask that tells us where we've got to
@@ -388,7 +389,7 @@ namespace {
      */
     template<typename ImagePixelType, typename MaskPixelType>
     bool StartspanSet<ImagePixelType, MaskPixelType>::process(Footprint *fp,     // the footprint that we're building
-                                                              const float threshold) {	// Threshold
+                                                              const Threshold& threshold) { // Threshold
         const int row0 = _image->getOffsetRows();
         const int col0 = _image->getOffsetCols();
         const int numRows = _image->getRows();
@@ -431,7 +432,7 @@ namespace {
         bool stop = false;			// should I stop searching for spans?
 
         typedef typename lsst::fw::Image<ImagePixelType>::pixel_accessor pixAccessT;
-        //typedef typename lsst::fw::Mask<MaskPixelType>::pixel_accessor maskPixAccessT;
+        const float thresholdVal = threshold.getValue();
         
         for (int i = sspan->span->y -row0 + di; i < numRows && i >= 0; i += di) {
             pixAccessT imgRow = _image->origin().advance(0, i); // row pointer
@@ -443,7 +444,7 @@ namespace {
             //
             nx0 = -1;
             for (int j = x0 - 1; j >= -1; j--) {
-                ImagePixelType pixVal = (j < 0) ? threshold - 100 : imgRow[j];
+                ImagePixelType pixVal = (j < 0) ? thresholdVal - 100 : imgRow[j];
                 if (_mask(j, i, Startspan<MaskPixelType>::detectedPlane) || pixVal < threshold) {
                     if (j < x0 - 1) {	// we found some pixels above threshold
                         nx0 = j + 1;
@@ -565,7 +566,7 @@ namespace {
  */
 pmFootprint *
 pmFindFootprintAtPoint(const psImage *img,	// image to search
-		       const float threshold,	// Threshold
+		       const Threshold& threshold, // Threshold
 		       const psArray *peaks, // array of peaks; finding one terminates search for footprint
 		       int row, int col) { // starting position (in img's parent's coordinate system)
    assert(img != NULL);
