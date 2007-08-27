@@ -88,6 +88,19 @@ class FootprintTestCase(unittest.TestCase):
         assert bbox.max().x() == 105
         assert bbox.max().y() == 11
 
+    def testRectangle(self):
+        """Add Spans and check bounding box"""
+        foot = detection.Footprint(); foot.rectangle(fw.BBox2i(99, 10, 6, 1))
+
+        bbox = foot.getBBox()
+
+        assert bbox.width() == 7 - 1    # N.b. definition of BBox EXCLUDES top right point
+        assert bbox.height() == 2 - 1
+        assert bbox.min().x() == 99
+        assert bbox.min().y() == 10
+        assert bbox.max().x() == 105
+        assert bbox.max().y() == 11
+
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 class DetectionSetTestCase(unittest.TestCase):

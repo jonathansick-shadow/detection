@@ -107,7 +107,6 @@ const Span& Footprint::addSpan(const int y, //!< row to add
     return *sp.get();
 }
 
-
 /**
  * Tell this to calculate its bounding box
  */
@@ -132,7 +131,7 @@ void Footprint::setBBox() {
 	if (sp->_y > y1) y1 = sp->_y;
     }
 
-    _bbox = vw::BBox2i(x0, y0, x1, y1);
+    _bbox = vw::BBox2i(x0, y0, x1 - x0, y1 - y0); // not "+ 1" as BBox EXCLUDES max in width/height
 }
 
 /**
@@ -147,7 +146,31 @@ int Footprint::setNpix() {
 
    return _npix;
 }
+/**
+ * Convert a Footprint to a rectangle, specified by bbox
+ *
+ * Throws an exception (TBD) if the Footprint already contains Spans
+ */
+void Footprint::rectangle(const vw::BBox2i& bbox //!< The desired bounding box
+                         ) {
+    if (_spans.size() > 0) {
+        throw lsst::mwi::exceptions::InvalidParameter(boost::format("Footprint already has %d spans") %
+                                                      _spans.size());
+    }
 
+    const int col0 = bbox.min().x();
+    const int row0 = bbox.min().y();
+    const int col1 = bbox.max().x();
+    const int row1 = bbox.max().y();
+
+    for (int i = row0; i <= row1; i++) {
+        addSpan(i, col0, col1);
+    }
+}
+
+/**
+ * Set the pixels in idImage which are in this to the specified value
+ */
 void Footprint::insertIntoImage(lsst::fw::Image<int>& idImage, //!< Image to contain the footprint
                                 const int id) const { //!< Set image to this value
     const unsigned int ncols = _region.max().x() - _region.min().x() + 1;

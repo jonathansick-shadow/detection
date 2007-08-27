@@ -107,7 +107,9 @@ public:
     
     void normalize();
     int setNpix();
-    void setBBox();    
+    void setBBox();
+
+    void rectangle(const vw::BBox2i& bbox);
 
     void insertIntoImage(lsst::fw::Image<int>& idImage, const int id) const;
 private:
