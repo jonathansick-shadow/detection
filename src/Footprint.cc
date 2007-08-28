@@ -70,6 +70,28 @@ Footprint::Footprint(int nspan,         //!< initial number of spans in this Foo
     }
     _npix = 0;
 }
+/**
+ * Create a rectangular Footprint
+ */
+Footprint::Footprint(const vw::BBox2i& bbox, //!< The bounding box defining the rectangle
+                     const vw::BBox2i region) //!< Bounding box of MaskedImage footprint lives in
+    : lsst::mwi::data::LsstBase(typeid(this)),
+      _id(++id),
+      _npix(0),
+      _spans(*new std::vector<Span::PtrType>),
+      _bbox(vw::BBox2i()),
+      _peaks(*new std::vector<Peak::PtrType>),
+      _region(region),
+      _normalized(false) {
+    const int col0 = bbox.min().x();
+    const int row0 = bbox.min().y();
+    const int col1 = bbox.max().x();
+    const int row1 = bbox.max().y();
+
+    for (int i = row0; i <= row1; i++) {
+        addSpan(i, col0, col1);
+    }
+}
 
 /**
  * Destroy a Footprint
@@ -150,6 +172,8 @@ int Footprint::setNpix() {
  * Convert a Footprint to a rectangle, specified by bbox
  *
  * Throws an exception (TBD) if the Footprint already contains Spans
+ *
+ * \note: This method has been superceded by the ctor taking a BBox2i
  */
 void Footprint::rectangle(const vw::BBox2i& bbox //!< The desired bounding box
                          ) {
@@ -157,6 +181,8 @@ void Footprint::rectangle(const vw::BBox2i& bbox //!< The desired bounding box
         throw lsst::mwi::exceptions::InvalidParameter(boost::format("Footprint already has %d spans") %
                                                       _spans.size());
     }
+
+    std::cout << "Please use Footprint(BBox2i) not Footprint.rectangle()" << std::endl;
 
     const int col0 = bbox.min().x();
     const int row0 = bbox.min().y();

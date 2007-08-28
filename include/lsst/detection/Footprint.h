@@ -93,6 +93,8 @@ public:
     typedef boost::shared_ptr<Footprint> PtrType;
 
     Footprint(int nspan = 0, const vw::BBox2i region = vw::BBox2i(0, 0, 0, 0));
+    Footprint(const vw::BBox2i& bbox, const vw::BBox2i region = vw::BBox2i(0, 0, 0, 0));
+
     ~Footprint();
 
     int getId() { return _id; }         //!< Return the footprint's unique ID
