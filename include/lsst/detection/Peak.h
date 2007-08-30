@@ -7,7 +7,9 @@
 #include <lsst/mwi/data/LsstBase.h>
 
 namespace lsst { namespace detection {
-
+/*!
+ * \brief A peak in an image
+ */
 class Peak : private lsst::mwi::data::Citizen {
 public:
     typedef boost::shared_ptr<Peak> PtrType;

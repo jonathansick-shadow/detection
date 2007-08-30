@@ -70,6 +70,7 @@ Footprint::Footprint(int nspan,         //!< initial number of spans in this Foo
     }
     _npix = 0;
 }
+
 /**
  * Create a rectangular Footprint
  */
@@ -85,11 +86,35 @@ Footprint::Footprint(const vw::BBox2i& bbox, //!< The bounding box defining the 
       _normalized(false) {
     const int col0 = bbox.min().x();
     const int row0 = bbox.min().y();
-    const int col1 = bbox.max().x();
-    const int row1 = bbox.max().y();
+    const int col1 = bbox.max().x() - 1; // This is the vw convention;
+    const int row1 = bbox.max().y() - 1; //                            "max" means one-past-the-end
 
     for (int i = row0; i <= row1; i++) {
         addSpan(i, col0, col1);
+    }
+}
+
+/**
+ * Create a circular Footprint
+ */
+Footprint::Footprint(const BCircle2i& circle, //!< The center and radius of the circle
+                     const vw::BBox2i region) //!< Bounding box of MaskedImage footprint lives in
+    : lsst::mwi::data::LsstBase(typeid(this)),
+      _id(++id),
+      _npix(0),
+      _spans(*new std::vector<Span::PtrType>),
+      _bbox(vw::BBox2i()),
+      _peaks(*new std::vector<Peak::PtrType>),
+      _region(region),
+      _normalized(false) {
+    const int xc = circle.center().x(); // col-centre
+    const int yc = circle.center().y(); // row-centre
+    const float r = circle.radius();    // radius of circle, as an int
+    const int r2 = r*r;
+   
+    for(int i = -r; i <= r; i++) {
+        int hlen = sqrt(r2 - i*i);
+        addSpan(yc + i, xc - hlen, xc + hlen);
     }
 }
 
@@ -173,7 +198,7 @@ int Footprint::setNpix() {
  *
  * Throws an exception (TBD) if the Footprint already contains Spans
  *
- * \note: This method has been superceded by the ctor taking a BBox2i
+ * \deprecated This method has been superceded by the ctor taking a BBox2i
  */
 void Footprint::rectangle(const vw::BBox2i& bbox //!< The desired bounding box
                          ) {
@@ -186,8 +211,8 @@ void Footprint::rectangle(const vw::BBox2i& bbox //!< The desired bounding box
 
     const int col0 = bbox.min().x();
     const int row0 = bbox.min().y();
-    const int col1 = bbox.max().x();
-    const int row1 = bbox.max().y();
+    const int col1 = bbox.max().x() - 1; // This is the vw convention;
+    const int row1 = bbox.max().y() - 1; //                            "max" means one-past-the-end
 
     for (int i = row0; i <= row1; i++) {
         addSpan(i, col0, col1);
@@ -199,8 +224,8 @@ void Footprint::rectangle(const vw::BBox2i& bbox //!< The desired bounding box
  */
 void Footprint::insertIntoImage(lsst::fw::Image<int>& idImage, //!< Image to contain the footprint
                                 const int id) const { //!< Set image to this value
-    const unsigned int ncols = _region.max().x() - _region.min().x() + 1;
-    const unsigned int nrows = _region.max().y() - _region.min().y() + 1;
+    const unsigned int ncols = _region.width();
+    const unsigned int nrows = _region.height();
     const int col0 = _region.min().x();
     const int row0 = _region.min().y();
 

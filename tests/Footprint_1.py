@@ -89,30 +89,56 @@ class FootprintTestCase(unittest.TestCase):
         assert bbox.max().y() == 11
 
     def testFootprintFromBBox(self):
-        """Add Spans and check bounding box"""
-        foot = detection.Footprint(fw.BBox2i(99, 10, 6, 1))
+        """Create a rectangular Footprint"""
+        foot = detection.Footprint(fw.BBox2i(9, 10, 7, 4),
+                                   fw.BBox2i(0, 0, 30, 20))
 
         bbox = foot.getBBox()
 
         assert bbox.width() == 7 - 1    # N.b. definition of BBox EXCLUDES top right point
-        assert bbox.height() == 2 - 1
-        assert bbox.min().x() == 99
+        assert bbox.height() == 4 - 1
+        assert bbox.min().x() == 9
         assert bbox.min().y() == 10
-        assert bbox.max().x() == 105
-        assert bbox.max().y() == 11
+        assert bbox.max().x() == 15
+        assert bbox.max().y() == 13
 
-    def testRectangle(self):
-        """Add Spans and check bounding box"""
-        foot = detection.Footprint(); foot.rectangle(fw.BBox2i(99, 10, 6, 1))
+        idImage = fw.ImageInt(foot.getRegion().width(), foot.getRegion().height())
+        idImage.set(0)
+        
+        foot.insertIntoImage(idImage, foot.getId())
 
-        bbox = foot.getBBox()
+        if False:
+            import lsst.fw.Display.ds9 as ds9
+            ds9.mtv(idImage, frame=2)
 
-        assert bbox.width() == 7 - 1    # N.b. definition of BBox EXCLUDES top right point
-        assert bbox.height() == 2 - 1
-        assert bbox.min().x() == 99
-        assert bbox.min().y() == 10
-        assert bbox.max().x() == 105
-        assert bbox.max().y() == 11
+    def testBCircle2i(self):
+        """Test the BCircle2i constructors"""
+        
+        x = 100; y = 200; r = 1.5
+        
+        bc = detection.BCircle2i(detection.Vector2i(x, y), r)
+        for i in range(2):
+            c = bc.center()
+            assert c.x() == x
+            assert c.y() == y
+            self.assertAlmostEqual(bc.radius(), r)
+
+            bc = detection.BCircle2i(x, y, r)
+
+    def testFootprintFromBCircle(self):
+        """Create a circular Footprint"""
+
+        foot = detection.Footprint(detection.BCircle2i(9, 15, 6),
+                                   fw.BBox2i(0, 0, 20, 30))
+
+        idImage = fw.ImageInt(foot.getRegion().width(), foot.getRegion().height())
+        idImage.set(0)
+        
+        foot.insertIntoImage(idImage, foot.getId())
+
+        if False:
+            import lsst.fw.Display.ds9 as ds9
+            ds9.mtv(idImage, frame=2)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 

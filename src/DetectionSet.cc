@@ -80,10 +80,8 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
         const int npixMin)              //!< minimum number of pixels in an object
     : lsst::mwi::data::LsstBase(typeid(this)),
       _footprints(*new std::vector<Footprint::PtrType>()),
-      _region(*new vw::BBox2i(maskedImg.getOffsetCols(),
-                              maskedImg.getOffsetRows(),
-                              maskedImg.getOffsetCols() + maskedImg.getCols() - 1,
-                              maskedImg.getOffsetRows() + maskedImg.getRows() - 1)) {
+      _region(*new vw::BBox2i(maskedImg.getOffsetCols(), maskedImg.getOffsetRows(),
+                              maskedImg.getCols(), maskedImg.getRows())) {
     int id;				/* object ID */
     int in_span;                        /* object ID of current IdSpan */
     int nobj = 0;			/* number of objects found */
@@ -699,8 +697,8 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
  */
 template<typename ImagePixelType, typename MaskPixelType>
 typename lsst::fw::Image<int>::ImagePtrT DetectionSet<ImagePixelType, MaskPixelType>::insertIntoImage(const bool relativeIDs) {
-    const unsigned int ncols = _region.max().x() - _region.min().x() + 1;
-    const unsigned int nrows = _region.max().y() - _region.min().y() + 1;
+    const unsigned int ncols = _region.width();
+    const unsigned int nrows = _region.height();
 
     typename lsst::fw::Image<int>::ImagePtrT im(new lsst::fw::Image<int>(ncols, nrows));
 

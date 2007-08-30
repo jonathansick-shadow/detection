@@ -41,10 +41,42 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 
 %}
 
+%include "lsst/detection/BCircle.h"
 %include "lsst/detection/Peak.h"
 %include "lsst/detection/Footprint.h"
 
 %include <vw/Math/BBox.h>
+#if 0
+%   include <vw/Math/Vector.h>             // swig doesn't like "const static int value = 0;"
+#else
+    template <class ElemT, int SizeN = 0>
+    class Vector {
+        boost::array<ElemT,SizeN> core_;
+    public:
+        Vector() {
+            for( unsigned i=0; i<SizeN; ++i ) (*this)[i] = ElemT();
+        }
+        
+        Vector( ElemT e1, ElemT e2 ) {
+            BOOST_STATIC_ASSERT( SizeN >= 2 );
+            (*this)[0] = e1; (*this)[1] = e2;
+            for( unsigned i=2; i<SizeN; ++i ) (*this)[i] = ElemT();
+        }
+
+        ElemT x() {
+            BOOST_STATIC_ASSERT( SizeN >= 1 );
+            return core_[0];
+        }
+        
+        ElemT y() {
+            BOOST_STATIC_ASSERT( SizeN >= 2 );
+            return core_[1];
+        }
+    };
+#endif
+
+%template(BCircle2i) lsst::detection::BCircle<int32, 2>;
+%template(Vector2i)             Vector<int32, 2>;
 
 %template(PeakPtrT) boost::shared_ptr<Peak>;
 %template(PeakContainerT) std::vector<lsst::detection::Peak::PtrType>;

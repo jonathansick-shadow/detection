@@ -1,18 +1,27 @@
 #if !defined(LSST_DETECTION_FOOTPRINT_H)
 #define LSST_DETECTION_FOOTPRINT_H
-//
-// Describe a segment of an image
+//!
+// Describe a portion of an image
 //
 #include <list>
 #include <cmath>
 #include <boost/shared_ptr.hpp>
 #include <lsst/fw/MaskedImage.h>
 #include <lsst/detection/Peak.h>
+#include "BCircle.h"
 
 namespace lsst { namespace detection {
 
 class Footprint;
 
+/*!
+ * \brief Describe a range of pixels within an image
+ *
+ * This isn't really for public consumption, as it's the insides
+ * of a Footprint --- it should be made a private class within
+ * Footprint (but not until I'm fully checked in, which is hard
+ * at 30000' over Peru)
+ */
 class Span {
 public:
     typedef boost::shared_ptr<Span> PtrType;
@@ -41,7 +50,7 @@ private:
 
 /************************************************************************************************************/
 /**
- * A Threshold is used to pass a threshold value to the DetectionSet constructors
+ * \brief A Threshold is used to pass a threshold value to the DetectionSet constructors
  *
  * The threshold may be a simple value (type == VALUE), or in units of the image
  * standard deviation; you may specify that you'll provide the standard deviation
@@ -56,8 +65,8 @@ public:
     ;                                   //!< pixel value, number of sigma given s.d.; number of sigma given variance
 
     Threshold(const float value,        //!< desired value
-              const ThresholdType type = VALUE) : //!< interpretation of type
-        _value(value), _type(type) {}
+              const ThresholdType type = VALUE) //!< interpretation of type
+        : _value(value), _type(type) {}
 
     //! return type of threshold
     ThresholdType getType() const { return _type; }
@@ -87,13 +96,21 @@ private:
 };
 
 /************************************************************************************************************/
-
+/*!
+ * \brief Represent a set of pixels in an image
+ *
+ * A Footprint is a set of pixels, usually but not necessarily contiguous.
+ * There are constructors to find Footprints above some threshold in an image
+ * (see DetectionSet), or to create Footprints in the shape of various
+ * geometrical figures
+ */
 class Footprint : private lsst::mwi::data::LsstBase {
 public:
     typedef boost::shared_ptr<Footprint> PtrType;
 
     Footprint(int nspan = 0, const vw::BBox2i region = vw::BBox2i(0, 0, 0, 0));
     Footprint(const vw::BBox2i& bbox, const vw::BBox2i region = vw::BBox2i(0, 0, 0, 0));
+    Footprint(const BCircle2i& circle, const vw::BBox2i region = vw::BBox2i(0, 0, 0, 0));
 
     ~Footprint();
 
@@ -128,7 +145,10 @@ private:
 };
 
 /************************************************************************************************************/
-    
+/*!
+ * \brief A set of Footprints, associated with a MaskedImage
+ *
+ */
 template<typename ImagePixelT, typename MaskPixelT>
 class DetectionSet : private lsst::mwi::data::LsstBase {
 public:
