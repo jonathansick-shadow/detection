@@ -188,7 +188,7 @@ class DetectionSetTestCase(unittest.TestCase):
     def testGC(self):
         """Check that DetectionSets are automatically garbage collected (when MemoryTestCase runs)"""
         
-        ms = fw.MaskedImageD(10, 20);
+        ms = fw.MaskedImageD(10, 20)
         ds = detection.DetectionSetD(ms, detection.Threshold(10))
 
     def testFootprints(self):
