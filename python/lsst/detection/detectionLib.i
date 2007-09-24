@@ -76,7 +76,7 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 #endif
 
 %template(BCircle2i) lsst::detection::BCircle<int32, 2>;
-%template(Vector2i)             Vector<int32, 2>;
+%template(Vector2i)             vw::Vector<int32, 2>;
 
 %template(PeakPtrT) boost::shared_ptr<Peak>;
 %template(PeakContainerT) std::vector<lsst::detection::Peak::PtrType>;
@@ -87,7 +87,8 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 %template(FootprintPtrT) boost::shared_ptr<Footprint>;
 %template(FootprintContainerT) std::vector<lsst::detection::Footprint::PtrType>;
 
-%template(DetectionSetD) DetectionSet<ImagePixelType, MaskPixelType>;
+%template(DetectionSetF) lsst::detection::DetectionSet<float, lsst::fw::maskPixelType>;
+%template(DetectionSetD) lsst::detection::DetectionSet<double, lsst::fw::maskPixelType>;
 
 /******************************************************************************/
 // Local Variables: ***

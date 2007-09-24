@@ -102,7 +102,7 @@ class FootprintTestCase(unittest.TestCase):
         assert bbox.max().x() == 15
         assert bbox.max().y() == 13
 
-        idImage = fw.ImageInt(foot.getRegion().width(), foot.getRegion().height())
+        idImage = fw.ImageU(foot.getRegion().width(), foot.getRegion().height())
         idImage.set(0)
         
         foot.insertIntoImage(idImage, foot.getId())
@@ -131,7 +131,7 @@ class FootprintTestCase(unittest.TestCase):
         foot = detection.Footprint(detection.BCircle2i(9, 15, 6),
                                    fw.BBox2i(0, 0, 20, 30))
 
-        idImage = fw.ImageInt(foot.getRegion().width(), foot.getRegion().height())
+        idImage = fw.ImageU(foot.getRegion().width(), foot.getRegion().height())
         idImage.set(0)
         
         foot.insertIntoImage(idImage, foot.getId())
@@ -223,7 +223,7 @@ class DetectionSetTestCase(unittest.TestCase):
         ds = detection.DetectionSetD(self.ms, detection.Threshold(10))
         objects = ds.getFootprints()
 
-        idImage = fw.ImageInt(self.ms.getImage().getCols(), self.ms.getImage().getRows())
+        idImage = fw.ImageU(self.ms.getImage().getCols(), self.ms.getImage().getRows())
         idImage.set(0)
         
         for foot in objects:

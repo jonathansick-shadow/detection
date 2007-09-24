@@ -693,14 +693,14 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
 
 /************************************************************************************************************/
 /**
- * Return an Image<int> consisting of the Footprints in the DetectionSet
+ * Return an Image<boost::uint16_t> consisting of the Footprints in the DetectionSet
  */
 template<typename ImagePixelType, typename MaskPixelType>
-typename lsst::fw::Image<int>::ImagePtrT DetectionSet<ImagePixelType, MaskPixelType>::insertIntoImage(const bool relativeIDs) {
+typename lsst::fw::Image<boost::uint16_t>::ImagePtrT DetectionSet<ImagePixelType, MaskPixelType>::insertIntoImage(const bool relativeIDs) {
     const unsigned int ncols = _region.width();
     const unsigned int nrows = _region.height();
 
-    typename lsst::fw::Image<int>::ImagePtrT im(new lsst::fw::Image<int>(ncols, nrows));
+    typename lsst::fw::Image<boost::uint16_t>::ImagePtrT im(new lsst::fw::Image<boost::uint16_t>(ncols, nrows));
 
     int id = 0;
     for (std::vector<Footprint::PtrType>::const_iterator fiter = _footprints.begin(); fiter != _footprints.end(); fiter++) {
@@ -722,4 +722,5 @@ typename lsst::fw::Image<int>::ImagePtrT DetectionSet<ImagePixelType, MaskPixelT
 //
 // Implicit instantiations
 //
-template class DetectionSet<float, unsigned char>;
+template class DetectionSet<float, lsst::fw::maskPixelType>;
+template class DetectionSet<double, lsst::fw::maskPixelType>;

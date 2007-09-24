@@ -5,6 +5,7 @@
 //
 #include <list>
 #include <cmath>
+#include <boost/cstdint.hpp>
 #include <boost/shared_ptr.hpp>
 #include <lsst/fw/MaskedImage.h>
 #include <lsst/detection/Peak.h>
@@ -130,7 +131,7 @@ public:
 
     void rectangle(const vw::BBox2i& bbox);
 
-    void insertIntoImage(lsst::fw::Image<int>& idImage, const int id) const;
+    void insertIntoImage(lsst::fw::Image<boost::uint16_t>& idImage, const int id) const;
 private:
     //Footprint(const Footprint &) {};  // XXX how to I handle LsstBase's copy constructor?
     static int id;
@@ -170,9 +171,9 @@ public:
     const vw::BBox2i& getRegion() const { return _region; } //!< Return the corners of the MaskedImage
 
 #if 0                                   // these are equivalent, but the former confuses swig
-    typename lsst::fw::Image<int>::ImagePtrT insertIntoImage(const bool relativeIDs);
+    typename lsst::fw::Image<boost::uint16_t>::ImagePtrT insertIntoImage(const bool relativeIDs);
 #else
-    typename boost::shared_ptr<lsst::fw::Image<int> > insertIntoImage(const bool relativeIDs);
+    typename boost::shared_ptr<lsst::fw::Image<boost::uint16_t> > insertIntoImage(const bool relativeIDs);
 #endif
 private:
     std::vector<Footprint::PtrType>& _footprints;  //!< the Footprints of detected objects

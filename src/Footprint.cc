@@ -222,7 +222,7 @@ void Footprint::rectangle(const vw::BBox2i& bbox //!< The desired bounding box
 /**
  * Set the pixels in idImage which are in this to the specified value
  */
-void Footprint::insertIntoImage(lsst::fw::Image<int>& idImage, //!< Image to contain the footprint
+void Footprint::insertIntoImage(lsst::fw::Image<boost::uint16_t>& idImage, //!< Image to contain the footprint
                                 const int id) const { //!< Set image to this value
     const unsigned int ncols = _region.width();
     const unsigned int nrows = _region.height();
@@ -235,7 +235,7 @@ void Footprint::insertIntoImage(lsst::fw::Image<int>& idImage, //!< Image to con
                                          % idImage.getCols() % idImage.getRows() % ncols % nrows);
     }
 
-    typedef lsst::fw::Image<int>::pixel_accessor pixAccessT;
+    typedef lsst::fw::Image<boost::uint16_t>::pixel_accessor pixAccessT;
 
     for (std::vector<Span::PtrType>::const_iterator spi = _spans.begin(); spi != _spans.end(); spi++) {
         const Span::PtrType span = *spi;
