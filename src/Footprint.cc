@@ -7,7 +7,7 @@
 #include <typeinfo>
 #include <boost/format.hpp>
 #include "lsst/mwi/utils/Trace.h"
-#include "lsst/mwi/exceptions/Exception.h"
+#include "lsst/mwi/exceptions.h"
 #include "lsst/detection/Peak.h"
 #include "lsst/detection/Footprint.h"
 
@@ -230,7 +230,7 @@ void Footprint::insertIntoImage(lsst::fw::Image<int>& idImage, //!< Image to con
     const int row0 = _region.min().y();
 
     if (ncols != idImage.getCols() || nrows != idImage.getRows()) {
-        throw lsst::fw::InvalidParameter(boost::format("Image of size (%dx%d) doesn't match "
+        throw lsst::mwi::exceptions::InvalidParameter(boost::format("Image of size (%dx%d) doesn't match "
                                                        "Footprint's host Image of size (%dx%d)")
                                          % idImage.getCols() % idImage.getRows() % ncols % nrows);
     }

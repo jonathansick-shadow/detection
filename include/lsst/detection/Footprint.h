@@ -160,7 +160,7 @@ public:
                  const Threshold& threshold,
                  int x,
                  int y,
-                 const vector<Peak> *peaks = NULL);
+                 const std::vector<Peak> *peaks = NULL);
     DetectionSet(const DetectionSet &set, int r = 0);
     DetectionSet(const DetectionSet &footprints1, const DetectionSet &footprints2,
                  const int includePeaks);

@@ -4,7 +4,7 @@
 #include <typeinfo>
 #include <boost/format.hpp>
 #include <lsst/mwi/data/DataProperty.h>
-#include "lsst/mwi/exceptions/Exception.h"
+#include "lsst/mwi/exceptions.h"
 #include "lsst/mwi/utils/Trace.h"
 
 #include "lsst/detection/Peak.h"
@@ -30,7 +30,7 @@ namespace {
 /*
  * comparison functor; sort by ID then row
  */
-    struct IdSpanCompar : public binary_function<const IdSpan::PtrType, const IdSpan::PtrType, bool> {
+    struct IdSpanCompar : public std::binary_function<const IdSpan::PtrType, const IdSpan::PtrType, bool> {
         bool operator()(const IdSpan::PtrType a, const IdSpan::PtrType b) {
             if(a->id < b->id) {
                 return true;
@@ -44,7 +44,7 @@ namespace {
 /*
  * Follow a chain of aliases, returning the final resolved value.
  */
-    int resolve_alias(const vector<int>& aliases, /* list of aliases */
+    int resolve_alias(const std::vector<int>& aliases, /* list of aliases */
                       int id) {         /* alias to look up */
         int resolved = id;              /* resolved alias */
         
@@ -267,7 +267,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
         const Threshold& threshold,          //!< threshold to find objects
         int x,                          //!< Footprint should include this pixel (column)
         int y,                          //!< Footprint should include this pixel (row) 
-        const vector<Peak> *peaks)        //!< Footprint should include at most one of these peaks
+        const std::vector<Peak> *peaks)        //!< Footprint should include at most one of these peaks
     : lsst::mwi::data::LsstBase(typeid(this)),
       _footprints(*new std::vector<Footprint::PtrType>())
     {

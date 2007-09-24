@@ -7,7 +7,7 @@
 #include <typeinfo>
 #include <boost/format.hpp>
 #include "lsst/mwi/utils/Trace.h"
-#include "lsst/mwi/exceptions/Exception.h"
+#include "lsst/mwi/exceptions.h"
 #include "lsst/detection/Peak.h"
 
 using namespace lsst::detection;

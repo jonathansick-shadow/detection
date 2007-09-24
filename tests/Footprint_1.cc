@@ -18,14 +18,14 @@ int main() {
     try {
         DetectionSet<ImagePixelT, MaskPixelT> ds_by_variance(img, Threshold(0, Threshold::STDEV));
         status++;
-    } catch (lsst::mwi::exceptions::Exception& e) {
+    } catch (lsst::mwi::exceptions::Runtime& e) {
         std::cerr << "Caught exception: " << e.what() << std::endl;
     }
     
     try {
         DetectionSet<ImagePixelT, MaskPixelT> ds_by_variance(img, Threshold(0, Threshold::VARIANCE));
         status++;
-    } catch (lsst::mwi::exceptions::Exception& e) {
+    } catch (lsst::mwi::exceptions::Runtime& e) {
         std::cerr << "Caught exception: " << e.what() << std::endl;
     }
 
