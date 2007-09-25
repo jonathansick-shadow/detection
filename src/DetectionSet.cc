@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include <boost/format.hpp>
 #include <lsst/mwi/data/DataProperty.h>
+#include "lsst/fw/fwExceptions.h"
 #include "lsst/mwi/exceptions.h"
 #include "lsst/mwi/utils/Trace.h"
 
@@ -232,7 +233,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
         mask->getMaskPlane(planeName, bitPlaneID);
         throw lsst::mwi::exceptions::InvalidParameter("Requested Mask plane is already allocated")
             << lsst::mwi::data::DataProperty("Plane", planeName);
-    } catch (lsst::mwi::exceptions::NoMaskPlane) {
+    } catch (lsst::fw::NoMaskPlane) {
         mask->addMaskPlane(planeName);
     }
 
