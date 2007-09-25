@@ -31,6 +31,7 @@ using namespace vw;
 %init %{
 %}
 
+%include "lsst/fw/Mask.h"
 %include "lsst/mwi/p_lsstSwig.i"
 %include "lsst/fw/Core/lsstImageTypes.i"     // vw and Image/Mask types and typedefs
 
