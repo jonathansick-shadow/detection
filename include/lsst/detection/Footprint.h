@@ -105,7 +105,7 @@ private:
  * (see DetectionSet), or to create Footprints in the shape of various
  * geometrical figures
  */
-class Footprint : private lsst::mwi::data::LsstBase {
+class Footprint : public lsst::mwi::data::LsstBase {
 public:
     typedef boost::shared_ptr<Footprint> PtrType;
 
@@ -151,7 +151,7 @@ private:
  *
  */
 template<typename ImagePixelT, typename MaskPixelT>
-class DetectionSet : private lsst::mwi::data::LsstBase {
+class DetectionSet : public lsst::mwi::data::LsstBase {
 public:
     DetectionSet(const lsst::fw::MaskedImage<ImagePixelT, MaskPixelT> &img,
                  const Threshold& threshold,

@@ -31,7 +31,6 @@ using namespace vw;
 %init %{
 %}
 
-%include "lsst/fw/Mask.h"
 %include "lsst/mwi/p_lsstSwig.i"
 %include "lsst/fw/Core/lsstImageTypes.i"     // vw and Image/Mask types and typedefs
 
@@ -42,6 +41,18 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 
 %}
 
+// 362: operator=  ignored
+// I had trouble getting %warnfilter to work; hence the pragma
+#pragma SWIG nowarn=362
+
+%import "lsst/mwi/data/Citizen.h"
+%import "lsst/mwi/policy/Policy.h"
+%import "lsst/mwi/data/LsstData.h"
+%import "lsst/mwi/data/LsstImpl_DC2.h"
+%import "lsst/mwi/data/LsstBase.h"
+
+%import "lsst/fw/Mask.h"
+%import "lsst/fw/Mask.h"
 %include "lsst/detection/BCircle.h"
 %include "lsst/detection/Peak.h"
 %include "lsst/detection/Footprint.h"

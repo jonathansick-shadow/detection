@@ -10,7 +10,7 @@ namespace lsst { namespace detection {
 /*!
  * \brief A peak in an image
  */
-class Peak : private lsst::mwi::data::Citizen {
+class Peak : public lsst::mwi::data::Citizen {
 public:
     typedef boost::shared_ptr<Peak> PtrType;
 
