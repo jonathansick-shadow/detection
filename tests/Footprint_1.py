@@ -13,6 +13,7 @@ import unittest
 import lsst.mwi.tests as tests
 import lsst.mwi.utils as mwiu
 import lsst.fw.Core.fwLib as fw
+import lsst.fw.Display.ds9 as ds9
 import lsst.detection.detectionLib as detection
 
 try:
@@ -108,7 +109,6 @@ class FootprintTestCase(unittest.TestCase):
         foot.insertIntoImage(idImage, foot.getId())
 
         if False:
-            import lsst.fw.Display.ds9 as ds9
             ds9.mtv(idImage, frame=2)
 
     def testBCircle2i(self):
@@ -137,7 +137,6 @@ class FootprintTestCase(unittest.TestCase):
         foot.insertIntoImage(idImage, foot.getId())
 
         if False:
-            import lsst.fw.Display.ds9 as ds9
             ds9.mtv(idImage, frame=2)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -179,7 +178,6 @@ class DetectionSetTestCase(unittest.TestCase):
             obj.insert(im)
 
         if display:
-            import lsst.fw.Display.ds9 as ds9
             ds9.mtv(im, frame=0)
         
     def tearDown(self):
@@ -205,18 +203,14 @@ class DetectionSetTestCase(unittest.TestCase):
         ds = detection.DetectionSetD(self.ms, detection.Threshold(10), "OBJECT")
         objects = ds.getFootprints()
 
-        m = self.ms.getMask()
-        bitPlane = m.getPlaneBitMask("OBJECT")
-
         if display:
-            import lsst.fw.Display.ds9 as ds9
-            ds9.mtv(m, frame=1)
+            ds9.mtv(self.ms, frame=1)
 
-        #pdb.set_trace()
+        mask = self.ms.getMask()
         for i in range(len(objects)):
             for sp in objects[i].getSpans():
                 for x in range(sp.getX0(), sp.getX1() + 1):
-                    self.assertEqual(m.getPtr(x, sp.getY()), 1)
+                    self.assertEqual(mask.getPtr(x, sp.getY()), 1)
 
     def testFootprintsImageId(self):
         """Check that we can insert footprints into an Image"""
@@ -230,7 +224,6 @@ class DetectionSetTestCase(unittest.TestCase):
             foot.insertIntoImage(idImage, foot.getId())
 
         if False:
-            import lsst.fw.Display.ds9 as ds9
             ds9.mtv(idImage, frame=2)
 
         for i in range(len(objects)):
@@ -245,9 +238,7 @@ class DetectionSetTestCase(unittest.TestCase):
         objects = ds.getFootprints()
 
         idImage = ds.insertIntoImage(True)
-
         if display:
-            import lsst.fw.Display.ds9 as ds9
             ds9.mtv(idImage, frame=2)
 
         for i in range(len(objects)):
