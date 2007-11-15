@@ -32,7 +32,7 @@ using namespace vw;
 %}
 
 %include "lsst/mwi/p_lsstSwig.i"
-%include "lsst/fw/Core/lsstImageTypes.i"     // vw and Image/Mask types and typedefs
+%import "lsst/fw/Core/lsstImageTypes.i"     // vw and Image/Mask types and typedefs
 
 %pythoncode %{
 def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python/lsst/fw/Core/detectionLib.i $"):
@@ -41,9 +41,10 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 
 %}
 
-// 362: operator=  ignored
-// I had trouble getting %warnfilter to work; hence the pragma
-#pragma SWIG nowarn=362
+// Suppress swig complaints
+// I had trouble getting %warnfilter to work; hence the pragmas
+#pragma SWIG nowarn=314                 // print is a python keyword (--> _print)
+#pragma SWIG nowarn=362                 // operator=  ignored
 
 %import "lsst/mwi/data/Citizen.h"
 %import "lsst/mwi/policy/Policy.h"
@@ -51,8 +52,10 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 %import "lsst/mwi/data/LsstImpl_DC2.h"
 %import "lsst/mwi/data/LsstBase.h"
 
+%import "lsst/fw/Image.h"
 %import "lsst/fw/Mask.h"
-%import "lsst/fw/Mask.h"
+%import "lsst/fw/MaskedImage.h"
+
 %include "lsst/detection/BCircle.h"
 %include "lsst/detection/Peak.h"
 %include "lsst/detection/Footprint.h"
@@ -101,6 +104,7 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 
 %template(DetectionSetF) lsst::detection::DetectionSet<float, lsst::fw::maskPixelType>;
 %template(DetectionSetD) lsst::detection::DetectionSet<double, lsst::fw::maskPixelType>;
+%boost_shared_ptr(DetectionSetDPtr, lsst::detection::DetectionSet<double, lsst::fw::maskPixelType>);
 
 /******************************************************************************/
 // Local Variables: ***
