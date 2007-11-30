@@ -86,7 +86,7 @@ public:
             if (param <= 0) {
                 throw lsst::mwi::exceptions::InvalidParameter(boost::format("Variance must be > 0: %g") % param);
             }
-            return _value*sqrt(param);
+            return _value*std::sqrt(param);
           default:
             throw lsst::mwi::exceptions::InvalidParameter(boost::format("Unsopported type: %d") % _type);
         }

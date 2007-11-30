@@ -109,11 +109,12 @@ Footprint::Footprint(const BCircle2i& circle, //!< The center and radius of the 
       _normalized(false) {
     const int xc = circle.center().x(); // col-centre
     const int yc = circle.center().y(); // row-centre
-    const float r = circle.radius();    // radius of circle, as an int
-    const int r2 = r*r;
+    const float floatRad = circle.radius(); // float radius
+    const int r = static_cast<int>(floatRad + 0.5); // rounded radius
+    const int r2 = static_cast<int>(floatRad*floatRad + 0.5); // rounded radius^2
    
     for(int i = -r; i <= r; i++) {
-        int hlen = sqrt(r2 - i*i);
+        int hlen = static_cast<int>(std::sqrt(static_cast<double>(r2 - i*i)));
         addSpan(yc + i, xc - hlen, xc + hlen);
     }
 }
@@ -583,7 +584,7 @@ psErrorCode pmFootprintCullPeaks(const psImage *img, // the image wherein lives 
 	// from any of its friends
 	//
 	assert (x >= 0 && x < subImg->numCols && y >= 0 && y < subImg->numRows);
-	const float stdev = sqrt(subWt->data.F32[y][x]);
+	const float stdev = std::sqrt(subWt->data.F32[y][x]);
 	float threshold = subImg->data.F32[y][x] - nsigma_delta*stdev;
 	if (isnan(threshold) || threshold < min_threshold) {
 #if 1					// min_threshold is assumed to be below the detection threshold,
