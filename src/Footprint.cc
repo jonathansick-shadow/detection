@@ -109,9 +109,8 @@ Footprint::Footprint(const BCircle2i& circle, //!< The center and radius of the 
       _normalized(false) {
     const int xc = circle.center().x(); // col-centre
     const int yc = circle.center().y(); // row-centre
-    const float floatRad = circle.radius(); // float radius
-    const int r = static_cast<int>(floatRad + 0.5); // rounded radius
-    const int r2 = static_cast<int>(floatRad*floatRad + 0.5); // rounded radius^2
+    const int r2 = static_cast<int>(circle.radius()*circle.radius() + 0.5); // rounded radius^2
+    const int r = static_cast<int>(std::sqrt(static_cast<double>(r2))); // truncated radius; r*r <= r2
    
     for(int i = -r; i <= r; i++) {
         int hlen = static_cast<int>(std::sqrt(static_cast<double>(r2 - i*i)));
