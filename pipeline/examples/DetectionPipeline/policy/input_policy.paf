@@ -1,0 +1,10 @@
+InputItems: {
+    DifferenceExposure: {
+        Type: "ExposureF"
+        PythonType: "lsst.fw.Core.fwLib.ExposureF"
+        StoragePolicy: {
+            Storage: "FitsStorage"
+            Location: "/home/tsa/DC2Output/sm63.021115_0814.128_8.diffSM"
+        }
+    }
+}

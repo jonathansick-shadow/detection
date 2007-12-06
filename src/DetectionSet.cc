@@ -72,6 +72,9 @@ DetectionSet<ImagePixelType, MaskPixelType>::~DetectionSet() {
  * Go through an image, finding sets of connected pixels above threshold
  * and assembling them into Footprints;  the resulting set of objects
  * is returned as an array<Footprint::PtrType>
+ *
+ * If threshold.getPolarity() is false, pixels which are more negative than threshold are
+ * assembled into Footprints.
  */
 template<typename ImagePixelType, typename MaskPixelType>
 DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
@@ -117,6 +120,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
  */
     typedef typename lsst::fw::Image<ImagePixelType>::pixel_accessor pixAccessT;
     const float thresholdVal = threshold.getValue();
+    const bool polarity = threshold.getPolarity();
 
     pixAccessT rowPtr = img->origin();   // row pointer
     in_span = 0;			// not in a span
@@ -133,7 +137,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
         in_span = 0;			/* not in a span */
         pixAccessT pixPtr = rowPtr;
         for (int x = 0; x < numCols; x++, pixPtr.next_col()) {
-            ImagePixelType pixVal = *pixPtr;
+	     ImagePixelType pixVal = (polarity ? *pixPtr : -(*pixPtr));
 
             if (pixVal < thresholdVal) {
                 if (in_span) {
@@ -432,6 +436,7 @@ namespace {
 
         typedef typename lsst::fw::Image<ImagePixelType>::pixel_accessor pixAccessT;
         const float thresholdVal = threshold.getValue();
+	const bool polarity = threshold.getPolarity();
         
         for (int i = sspan->span->y -row0 + di; i < numRows && i >= 0; i += di) {
             pixAccessT imgRow = _image->origin().advance(0, i); // row pointer
@@ -443,7 +448,7 @@ namespace {
             //
             nx0 = -1;
             for (int j = x0 - 1; j >= -1; j--) {
-                ImagePixelType pixVal = (j < 0) ? thresholdVal - 100 : imgRow[j];
+		ImagePixelType pixVal = (j < 0) ? thresholdVal - 100 : (polarity ? imgRow[j] : -imgRow[j]);
                 if (_mask(j, i, Startspan<MaskPixelType>::detectedPlane) || pixVal < threshold) {
                     if (j < x0 - 1) {	// we found some pixels above threshold
                         nx0 = j + 1;
@@ -460,7 +465,8 @@ namespace {
                 //
                 //nx1 = 0;			// make gcc happy
                 for (int j = nx0 + 1; j <= numCols; j++) {
-                    ImagePixelType pixVal = (j >= numCols) ? threshold - 100 : (F32 ? imgRowF32[j] : imgRowS32[j]);
+		    ImagePixelType pixVal = (j >= numCols) ? threshold - 100 : 
+			  (polarity ? (F32 ? imgRowF32[j] : imgRowS32[j]) : (F32 ? -imgRowF32[j] : -imgRowS32[j]));
                     if ((maskRow[j] & DETECTED) || pixVal < threshold) {
                         nx1 = j - 1;
                         break;
@@ -486,12 +492,14 @@ namespace {
             //
             bool first = false;		// is this the first new span detected?
             for (int j = nx1 + 1; j <= x1 + 1; j++) {
-                ImagePixelType pixVal = (j >= numCols) ? threshold - 100 : (F32 ? imgRowF32[j] : imgRowS32[j]);
+		ImagePixelType pixVal = (j >= numCols) ? threshold - 100 : 
+		     (polarity ? (F32 ? imgRowF32[j] : imgRowS32[j]) : (F32 ? -imgRowF32[j] : -imgRowS32[j]));
                 if (!(maskRow[j] & DETECTED) && pixVal >= threshold) {
                     int sx0 = j++;		// span that we're working on is sx0:sx1
                     int sx1 = -1;		// We know that if we got here, we'll also set sx1
                     for (; j <= numCols; j++) {
-                        ImagePixelType pixVal = (j >= numCols) ? threshold - 100 : (F32 ? imgRowF32[j] : imgRowS32[j]);
+			 ImagePixelType pixVal = (j >= numCols) ? threshold - 100 : 
+			      (polarity ? (F32 ? imgRowF32[j] : imgRowS32[j]) : (F32 ? -imgRowF32[j] : -imgRowS32[j]));
                         if ((maskRow[j] & DETECTED) || pixVal < threshold) { // end of span
                             sx1 = j;
                             break;
@@ -725,3 +733,4 @@ typename lsst::fw::Image<boost::uint16_t>::ImagePtrT DetectionSet<ImagePixelType
 //
 template class DetectionSet<float, lsst::fw::maskPixelType>;
 template class DetectionSet<double, lsst::fw::maskPixelType>;
+template class DetectionSet<float, unsigned int>;

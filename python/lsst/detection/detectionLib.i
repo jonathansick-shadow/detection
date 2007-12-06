@@ -15,6 +15,7 @@ Python bindings for detection module
 #   include <boost/cstdint.hpp>
 #   include <boost/shared_ptr.hpp>
 #   include "lsst/detection/Footprint.h"
+#   include "lsst/detection/Measure.h"
 %}
 
 %inline %{
@@ -32,7 +33,7 @@ using namespace vw;
 %}
 
 %include "lsst/mwi/p_lsstSwig.i"
-%import "lsst/fw/Core/lsstImageTypes.i"     // vw and Image/Mask types and typedefs
+%include "lsst/fw/Core/lsstImageTypes.i"     // vw and Image/Mask types and typedefs
 
 %pythoncode %{
 def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python/lsst/fw/Core/detectionLib.i $"):
@@ -41,24 +42,13 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 
 %}
 
-// Suppress swig complaints
-// I had trouble getting %warnfilter to work; hence the pragmas
-#pragma SWIG nowarn=314                 // print is a python keyword (--> _print)
-#pragma SWIG nowarn=362                 // operator=  ignored
-
-%import "lsst/mwi/data/Citizen.h"
-%import "lsst/mwi/policy/Policy.h"
-%import "lsst/mwi/data/LsstData.h"
-%import "lsst/mwi/data/LsstImpl_DC2.h"
-%import "lsst/mwi/data/LsstBase.h"
-
-%import "lsst/fw/Image.h"
+%import "lsst/fw/DiaSource.h"
 %import "lsst/fw/Mask.h"
-%import "lsst/fw/MaskedImage.h"
 
 %include "lsst/detection/BCircle.h"
 %include "lsst/detection/Peak.h"
 %include "lsst/detection/Footprint.h"
+%include "lsst/detection/Measure.h"
 
 %include <vw/Math/BBox.h>
 #if 0
@@ -91,20 +81,22 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 #endif
 
 %template(BCircle2i) lsst::detection::BCircle<int32, 2>;
-%template(Vector2i)             vw::Vector<int32, 2>;
+%template(Vector2i)  vw::Vector<int32, 2>;
 
-%template(PeakPtrT) boost::shared_ptr<Peak>;
+%boost_shared_ptr(PeakPtrT, Peak);
 %template(PeakContainerT) std::vector<lsst::detection::Peak::PtrType>;
 
-%template(SpanPtrT) boost::shared_ptr<Span>;
+%boost_shared_ptr(SpanPtrT, Span);
 %template(SpanContainerT) std::vector<lsst::detection::Span::PtrType>;
 
-%template(FootprintPtrT) boost::shared_ptr<Footprint>;
+%boost_shared_ptr(FootprintPtrT, Footprint);
 %template(FootprintContainerT) std::vector<lsst::detection::Footprint::PtrType>;
 
 %template(DetectionSetF) lsst::detection::DetectionSet<float, lsst::fw::maskPixelType>;
 %template(DetectionSetD) lsst::detection::DetectionSet<double, lsst::fw::maskPixelType>;
-%boost_shared_ptr(DetectionSetDPtr, lsst::detection::DetectionSet<double, lsst::fw::maskPixelType>);
+
+%template(MeasureF) lsst::detection::Measure<float, lsst::fw::maskPixelType>;
+%template(MeasureD) lsst::detection::Measure<double, lsst::fw::maskPixelType>;
 
 /******************************************************************************/
 // Local Variables: ***

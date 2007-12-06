@@ -16,7 +16,7 @@ env = scons.makeEnv("detection",
                      ["wcslib", "wcslib/wcs.h", "wcs"],
                      ["xpa", "xpa.h", "xpa", "XPAPuts"],
                      ["mwi", "lsst/mwi/data.h", "mwi:C++"],
-                     ["fw", "lsst/fw/MaskedImage.h", "fw"],
+                     ["fw", "lsst/fw/MaskedImage.h", "fw"]
                      ])
 
 env.libs["detection"] +=  env.getlibs("mwi fw boost wcslib")

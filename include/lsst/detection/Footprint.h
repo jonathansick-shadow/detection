@@ -66,8 +66,9 @@ public:
     ;                                   //!< pixel value, number of sigma given s.d.; number of sigma given variance
 
     Threshold(const float value,        //!< desired value
-              const ThresholdType type = VALUE) //!< interpretation of type
-        : _value(value), _type(type) {}
+              const ThresholdType type = VALUE, //!< interpretation of type
+              const bool polarity = true)
+        : _value(value), _type(type), _polarity(polarity) {}
 
     //! return type of threshold
     ThresholdType getType() const { return _type; }
@@ -91,9 +92,11 @@ public:
             throw lsst::mwi::exceptions::InvalidParameter(boost::format("Unsopported type: %d") % _type);
         }
     } 
+    bool getPolarity() const { return _polarity; }
 private:
     float _value;                       //!< value of threshold, to be interpreted via _type
     ThresholdType _type;                //!< type of threshold
+    bool _polarity;                     //!< true for positive polarity, false for negative
 };
 
 /************************************************************************************************************/
@@ -118,7 +121,7 @@ public:
     int getId() { return _id; }         //!< Return the footprint's unique ID
     std::vector<Span::PtrType> &getSpans() { return _spans; } //!< return the Spans contained in this Footprint
     std::vector<Peak::PtrType> &getPeaks() { return _peaks; } //!< Return the Peaks contained in this Footprint
-    int getNpix() { return _npix; }     //!< Return the number of pixels in this Footprint
+    int getNpix() const { return _npix; }     //!< Return the number of pixels in this Footprint
 
     const Span& addSpan(const int y, const int x0, const int x1);
 

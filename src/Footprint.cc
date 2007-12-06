@@ -149,7 +149,7 @@ const Span& Footprint::addSpan(const int y, //!< row to add
     _npix += x1 - x0 + 1;
 
     _bbox.grow(vw::Vector2i(x0, y));
-    _bbox.grow(vw::Vector2i(x1, y));
+    _bbox.grow(vw::Vector2i(x1 + 1, y + 1));
 
     return *sp.get();
 }
@@ -178,7 +178,7 @@ void Footprint::setBBox() {
 	if (sp->_y > y1) y1 = sp->_y;
     }
 
-    _bbox = vw::BBox2i(x0, y0, x1 - x0, y1 - y0); // not "+ 1" as BBox EXCLUDES max in width/height
+    _bbox = vw::BBox2i(x0, y0, x1 - x0 + 1, y1 - y0 + 1); // must be "+ 1" as BBox EXCLUDES max in width/height
 }
 
 /**
