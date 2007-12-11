@@ -5,7 +5,7 @@ InputItems: {
         PythonType: "lsst.fw.Core.fwLib.ExposureF"
         StoragePolicy: {
             Storage: "FitsStorage"
-            Location: "/home/tsa/DC2InputData/Test/cal-53535-i-797722_28_MI_diff"
+            Location: "/home/taxelrod/DC2InputData/Test/cal-53535-i-797722_28_MI_diff"
         }
     }
 }

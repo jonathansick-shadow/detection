@@ -2,5 +2,5 @@
 # processes to run on that node 
 #
 # Single node single slice (2 = one for pre/postprocess, one for process)
-pinhole.lsstcorp.org:2
+lsst9.ncsa.uiuc.edu:2
 
