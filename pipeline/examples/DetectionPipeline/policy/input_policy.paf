@@ -1,10 +1,11 @@
+#<?cfg paf policy ?>
 InputItems: {
     DifferenceExposure: {
         Type: "ExposureF"
         PythonType: "lsst.fw.Core.fwLib.ExposureF"
         StoragePolicy: {
             Storage: "FitsStorage"
-            Location: "/home/tsa/DC2Output/sm63.021115_0814.128_8.diffSM"
+            Location: "/home/tsa/DC2InputData/Test/cal-53535-i-797722_28_MI_diff"
         }
     }
 }
