@@ -13,7 +13,7 @@ import lsst.detection.detectionLib as det
 
 __all__ = ["detection"]
 
-def detection(differenceImageExposure, policy, footprintList=None):
+def detection(differenceImageExposure, policy, filterId, footprintList=None):
     """Detect and measure objects in an incoming difference image Exposure
     
     Inputs:
@@ -24,6 +24,10 @@ def detection(differenceImageExposure, policy, footprintList=None):
     Returns:
     - an lsst.fw.DiaSourceVector
     """
+
+    mwiu.Trace("lsst.detection.detection", 3,
+        "filterId = %d" % (filterId))
+
     ###########
     #
     # Get directives from policy
@@ -86,6 +90,7 @@ def detection(differenceImageExposure, policy, footprintList=None):
     for i in range(len(fpVecPositive)):
         diaPtr = fwCat.DiaSourcePtr()
         diaPtr.setId(id)
+        diaPtr.setFilterId(filterId);
         imgMeasure.measureSource(diaPtr, fpVecPositive[i], 0.0)   # NOTE explicit background of zero used for difference image
         pixCoord = fw.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
         skyCoord = imgWCS.colRowToRaDec(pixCoord)
@@ -99,6 +104,7 @@ def detection(differenceImageExposure, policy, footprintList=None):
     for i in range(len(fpVecNegative)):
         diaPtr = fwCat.DiaSourcePtr()
         diaPtr.setId(id)
+        diaPtr.setFilterId(filterId);
         imgMeasure.measureSource(diaPtr, fpVecNegative[i], 0.0)   # NOTE explicit background of zero used for difference image
         pixCoord = fw.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
         skyCoord = imgWCS.colRowToRaDec(pixCoord)
