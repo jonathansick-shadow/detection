@@ -3,6 +3,7 @@ import os
 import pdb
 import sys
 import unittest
+import math
 
 import lsst.mwi.utils as mwiu
 import lsst.mwi.data as mwiData
@@ -35,9 +36,6 @@ def detection(differenceImageExposure, policy, filterId, footprintList=None):
     thresh = policy.get('thresholdSigma')
     nPixMin = policy.get('numPixMinFootprint')
 
-    mwiu.Trace("lsst.detection.detection", 3,
-        "thresholdSigma = %r; nPixMin = %r" % (thresh, nPixMin))
-
     ###########
     #
     # Unpack the MaskedImage from the Exposure
@@ -50,11 +48,11 @@ def detection(differenceImageExposure, policy, filterId, footprintList=None):
     # Crudely estimate noise from mean of variance image - should do sigma clipping
     #
 
-    # Need to Pythonize:
-    # float noise = sqrt(mean_channel_value(varianceImagePtr->getIVw()));
+    varImg = img.getVariance()
+    noise = math.sqrt(fw.mean_channel_value(varImg))
 
-    noise = 1.0
-
+    mwiu.Trace("lsst.detection.detection", 3,
+        "thresholdSigma = %r; noise = %r onPixMin = %r" % (thresh, noise, nPixMin))
 
     ###########
     #
