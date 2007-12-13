@@ -247,101 +247,125 @@ void Footprint::insertIntoImage(lsst::fw::Image<boost::uint16_t>& idImage, //!< 
     }
 }
 
-#if 0
-
 /************************************************************************************************************/
 /*
  * Worker routine for the pmSetFootprintArrayIDs/pmSetFootprintID (and pmMergeFootprintArrays)
  */
+template <typename IDPixelT>
 static void
-set_footprint_id(psImage *idImage,	// the image to set
-		 const pmFootprint *fp, // the footprint to insert
+set_footprint_id(lsst::fw::Image<IDPixelT> *idImage,	// the image to set
+                 Footprint::PtrType foot, // the footprint to insert
 		 const int id) {	// the desired ID
-   const int col0 = fp->region.x0;
-   const int row0 = fp->region.y0;
-
-   for (int j = 0; j < fp->spans->n; j++) {
-       const pmSpan *span = fp->spans->data[j];
-       psS32 *imgRow = idImage->data.S32[span->y - row0];
-       for(int k = span->x0 - col0; k <= span->x1 - col0; k++) {
-	   imgRow[k] += id;
-       }
-   }
+    typedef typename lsst::fw::Image<IDPixelT>::pixel_accessor ImagePixAccessT;
+    
+    for (std::vector<Span::PtrType>::const_iterator siter = foot->getSpans().begin();
+         siter != foot->getSpans().end(); siter++) {
+        const Span::PtrType span = *siter;
+        ImagePixAccessT spanPtr = idImage->origin().advance(span->getX0(), span->getY());
+        for (int x = span->getX0(); x <= span->getX1(); x++, spanPtr.next_col()) {
+            *spanPtr += id;
+        }
+    }
 }
 
+//template static void set_footprint_id<int>(lsst::fw::Image<int> *idImage, const Footprint &foot, const int id);
+
+template <typename IDPixelT>
 static void
-set_footprint_array_ids(psImage *idImage,
-			const psArray *footprints, // the footprints to insert
-			const bool relativeIDs) { // show IDs starting at 0, not pmFootprint->id
-   int id = 0;				// first index will be 1
-   for (int i = 0; i < footprints->n; i++) {
-       const pmFootprint *fp = footprints->data[i];
-       if (relativeIDs) {
-	   id++;
-       } else {
-	   id = fp->id;
-       }
-       
-       set_footprint_id(idImage, fp, id);
-   }
+set_footprint_array_ids(lsst::fw::Image<IDPixelT> *idImage, // the image to set
+                        const std::vector<Footprint::PtrType>& footprints, // the footprints to insert
+			const bool relativeIDs) { // show IDs starting at 0, not Footprint->id
+    int id = 0;				// first index will be 1
+
+    for (std::vector<Footprint::PtrType>::const_iterator fiter = footprints.begin();
+         fiter != footprints.end(); fiter++) {
+        const Footprint::PtrType foot = *fiter;
+        
+        if (relativeIDs) {
+            id++;
+        } else {
+            id = foot->getId();
+        }
+        
+        set_footprint_id(idImage, foot, id);
+    }
 }
 
+template static void set_footprint_array_ids<int>(lsst::fw::Image<int> *idImage,
+                                                  const std::vector<Footprint::PtrType>& footprints,
+                                                  const bool relativeIDs);
+
+/************************************************************************************************************/
 /*
- * Set an image to the value of footprint's ID whever they may fall
+ * Create an image from a Footprint's bounding box
  */
-psImage *pmSetFootprintArrayIDs(const psArray *footprints, // the footprints to insert
-				const bool relativeIDs) { // show IDs starting at 1, not pmFootprint->id
-   assert (footprints != NULL);
+template <typename IDImageT>
+static lsst::fw::Image<IDImageT> *makeImageFromBBox(const vw::BBox2i bbox) {
+    const int numCols = bbox.max().x() - bbox.min().x() + 1;
+    const int numRows = bbox.max().y() - bbox.min().y() + 1;
+    if (numCols < 0 || numRows < 0) {
+        throw lsst::mwi::exceptions::InvalidParameter(boost::format("Size of BBox is %dx%d") %
+                                                      numCols % numRows);
+    }
+    
+    lsst::fw::Image<IDImageT> *idImage = new lsst::fw::Image<IDImageT>(numCols, numRows);
+#if 0                                   // We need this!
+    const int col0 = bbox.min().x();
+    const int row0 = bbox.min().y();
+    idImage->setOffsetRows(row0);
+    idImage->setOffsetCols(col0);
+#endif
 
-   if (footprints->n == 0) {
-       psError(PS_ERR_BAD_PARAMETER_SIZE, true, "You didn't provide any footprints");
-       return NULL;
-   }
-   const pmFootprint *fp = footprints->data[0];
-   assert(pmIsFootprint((const psPtr)fp));
-   const int numCols = fp->region.x1 - fp->region.x0 + 1;
-   const int numRows = fp->region.y1 - fp->region.y0 + 1;
-   const int col0 = fp->region.x0;
-   const int row0 = fp->region.y0;
-   assert (numCols >= 0 && numRows >= 0);
-   
-   psImage *idImage = psImageAlloc(numCols, numRows, PS_TYPE_S32);
-   P_PSIMAGE_SET_ROW0(idImage, row0);
-   P_PSIMAGE_SET_COL0(idImage, col0);
-   psImageInit(idImage, 0);
-   /*
-    * do the work
-    */
-   set_footprint_array_ids(idImage, footprints, relativeIDs);
-
-   return idImage;
-   
+    return idImage;
 }
 
+/************************************************************************************************************/
 /*
- * Set an image to the value of footprint's ID whever they may fall
+ * Set an image to the value of footprint's ID wherver they may fall
  */
-psImage *pmSetFootprintID(const pmFootprint *fp, // the footprint to insert
-			  const int id) {	// the desired ID
-   assert(fp != NULL && pmIsFootprint((const psPtr)fp));
-   const int numCols = fp->region.x1 - fp->region.x0 + 1;
-   const int numRows = fp->region.y1 - fp->region.y0 + 1;
-   const int col0 = fp->region.x0;
-   const int row0 = fp->region.y0;
-   assert (numCols >= 0 && numRows >= 0);
-   
-   psImage *idImage = psImageAlloc(numCols, numRows, PS_TYPE_S32);
-   P_PSIMAGE_SET_ROW0(idImage, row0);
-   P_PSIMAGE_SET_COL0(idImage, col0);
-   psImageInit(idImage, 0);
-   /*
-    * do the work
-    */
-   set_footprint_id(idImage, fp, id);
+template <typename IDImageT>
+lsst::fw::Image<IDImageT> *setFootprintArrayIDs(
+	const std::vector<Footprint::PtrType>& footprints, // the footprints to insert
+        const bool relativeIDs          // show IDs starting at 1, not pmFootprint->id
+                                               ) {
+    std::vector<Footprint::PtrType>::const_iterator fiter = footprints.begin();
+    if (fiter == footprints.end()) {
+        throw lsst::mwi::exceptions::InvalidParameter("You didn't provide any footprints");
+    }
+    const Footprint::PtrType foot = *fiter;
 
-   return idImage;
-   
+    lsst::fw::Image<IDImageT> *idImage = makeImageFromBBox<IDImageT>(foot->getBBox());
+    *idImage *= 0;                      // should just SET image XXX
+    /*
+     * do the work
+     */
+    set_footprint_array_ids(idImage, footprints, relativeIDs);
+    
+    return idImage;
 }
+
+template lsst::fw::Image<int> *setFootprintArrayIDs(const std::vector<Footprint::PtrType>& footprints,
+                                          const bool relativeIDs);
+/*
+ * Set an image to the value of Footprint's ID wherever it may fall
+ */
+template <typename IDImageT>
+lsst::fw::Image<IDImageT> *setFootprintID(const Footprint::PtrType& foot, // the Footprint to insert
+                                          const int id // the desired ID
+                                         ) {
+    lsst::fw::Image<IDImageT> *idImage = makeImageFromBBox<IDImageT>(foot->getBBox());
+    *idImage *= 0;                      // should just SET image XXX
+    /*
+     * do the work
+     */
+    set_footprint_id(idImage, foot, id);
+
+    return idImage;
+}
+
+template lsst::fw::Image<int> *setFootprintID(const Footprint::PtrType& foot, const int id);
+
+#if 0
 
 /************************************************************************************************************/
 /*
