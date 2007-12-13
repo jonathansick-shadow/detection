@@ -118,8 +118,9 @@ public:
 
     ~Footprint();
 
-    int getId() { return _id; }         //!< Return the footprint's unique ID
+    int getId() const { return _id; }   //!< Return the footprint's unique ID
     std::vector<Span::PtrType> &getSpans() { return _spans; } //!< return the Spans contained in this Footprint
+    const std::vector<Span::PtrType> &getSpans() const { return _spans; } //!< return the Spans contained in this Footprint
     std::vector<Peak::PtrType> &getPeaks() { return _peaks; } //!< Return the Peaks contained in this Footprint
     int getNpix() const { return _npix; }     //!< Return the number of pixels in this Footprint
 
