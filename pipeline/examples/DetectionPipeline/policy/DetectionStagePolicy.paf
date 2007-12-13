@@ -2,7 +2,7 @@
 # Default Detection policy file
 
 # 
-thresholdSigma: 200.0
+thresholdSigma: 5.0
 numPixMinFootprint: 5
 #
 AdditionalData: "visitId=triggerVisistEvent.visitId"
