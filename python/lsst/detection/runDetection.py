@@ -16,8 +16,9 @@ defInDir = os.environ.get("FWDATA_DIR", "")
 moduleDir = os.path.split(__file__)[0]
 appDir = os.path.normpath(os.path.join("../../../",moduleDir))
 
-defDiaPath = os.path.join(defInDir, "871034p_1_MI")
-defPolicyPath = os.path.join(appDir, "pipeline/DetectionStagePolicy.paf")
+#defDiaPath = os.path.join(defInDir, "871034p_1_MI")
+defDiaPath = "/home/tsa/DC2OutputData/704893p_01_diff"
+defPolicyPath = "/home/tsa/DC2/detection/trunk/pipeline/examples/DetectionPipeline/policy/DetectionStagePolicy.paf"
 defVerbosity = 5 # change to 0 once this all works to hide all messages
 
 usage = """usage: %%prog [options] [diaImage [policyFile]]]
@@ -56,10 +57,10 @@ if options.debugIO:
 
 if options.verbosity > 0:
     print "Verbosity =", options.verbosity
-    lsst.mwi.utils.Trace_setVerbosity("lsst.detection", options.verbosity)
+    lsst.mwi.utils.Trace_setVerbosity("lsst.detection", 9)
 
-diaSources = Detection.detection(diaExposure, policy)
+diaSources = Detection.detection(diaExposure, policy, 0)
 
 for i in range(len(diaSources)):
     diaSource_i = diaSources[i]
-    print diaSource_i.toString()
+    print diaSource_i.getColc(), " ", diaSource_i.getRowc(), " -> ", diaSource_i.getRa(), " ", diaSource_i.getDec()

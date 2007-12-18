@@ -12,9 +12,13 @@ import lsst.fw.Core.fwLib as fw
 import lsst.fw.Core.fwCatalog as fwCat
 import lsst.detection.detectionLib as det
 
+from lsst.mwi.logging import Log, ScreenLog
+from lsst.mwi.logging import LogRec
+from lsst.mwi.data import DataProperty
+
 __all__ = ["detection"]
 
-def detection(differenceImageExposure, policy, filterId, footprintList=None):
+def detection(differenceImageExposure, policy, filterId, useLog=None, footprintList=None):
     """Detect and measure objects in an incoming difference image Exposure
     
     Inputs:
@@ -25,6 +29,10 @@ def detection(differenceImageExposure, policy, filterId, footprintList=None):
     Returns:
     - an lsst.fw.DiaSourceVector
     """
+
+    if not(useLog):
+        useLog = ScreenLog()
+        useLog.setScreenVerbose(True)
 
     mwiu.Trace("lsst.detection.detection", 3,
         "filterId = %d" % (filterId))
@@ -52,7 +60,13 @@ def detection(differenceImageExposure, policy, filterId, footprintList=None):
     noise = math.sqrt(fw.mean_channel_value(varImg))
 
     mwiu.Trace("lsst.detection.detection", 3,
-        "thresholdSigma = %r; noise = %r onPixMin = %r" % (thresh, noise, nPixMin))
+        "thresholdSigma = %r; noise = %r PixMin = %r" % (thresh, noise, nPixMin))
+
+    LogRec(useLog, Log.INFO) \
+                   <<  "Threshold computation" \
+                   << DataProperty("thresholdSigma", thresh) \
+                   << DataProperty("noise", noise) \
+                   << DataProperty("threshold", thresh*noise)
 
     ###########
     #
@@ -63,6 +77,10 @@ def detection(differenceImageExposure, policy, filterId, footprintList=None):
     fpVecPositive = dsPositive.getFootprints()
     print "Positive detections: ", len(fpVecPositive)
 
+    LogRec(useLog, Log.INFO) \
+                   <<  "Positive detections" \
+                   << DataProperty("nPositive", len(fpVecPositive))
+
     ###########
     #
     # Build the DetectionSet for negative sources
@@ -71,6 +89,10 @@ def detection(differenceImageExposure, policy, filterId, footprintList=None):
     dsNegative = det.DetectionSetF(img, det.Threshold(thresh*noise, det.Threshold.VALUE, False), "FP-", nPixMin)
     fpVecNegative = dsNegative.getFootprints()
     print "Negative detections: ", len(fpVecNegative)
+
+    LogRec(useLog, Log.INFO) \
+                   <<  "Negative detections" \
+                   << DataProperty("nNegative", len(fpVecNegative))
 
 
     ###########
