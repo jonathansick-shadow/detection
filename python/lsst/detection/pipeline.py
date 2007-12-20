@@ -10,7 +10,7 @@ import Detection
 __all__ = ["DetectionStage"]
 
 class DetectionStage(lsst.dps.Stage.Stage):
-    def __init__(self):
+    def __init__(self, stageId, policy):
 
         self.detectionLog = Log(Log.getDefaultLog(), "detection.stage")
 
