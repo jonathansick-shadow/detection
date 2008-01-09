@@ -29,9 +29,9 @@ class DetectionStage(lsst.dps.Stage.Stage):
         filterNameItem = triggerEvent.findUnique('filterName')
         filterName = filterNameItem.getValueString()
         exposureIdItem = triggerEvent.findUnique('exposureId')
-        exposureId = exposureIdItem.getValueString()
+        exposureId = exposureIdItem.getValueInt()
         visitTimeItem = triggerEvent.findUnique('visitTime')
-        visitTime = visitTimeItem.getValueString()
+        visitTime = visitTimeItem.getValueDouble()
         ###########
         #
         # Log the beginning of Detection stage for this slice
@@ -55,7 +55,7 @@ class DetectionStage(lsst.dps.Stage.Stage):
             differenceImageExposure = differenceImageExposure,
             policy = self._policy,
             filterId = filterId,
-            log = self.detectionLog,
+            useLog = self.detectionLog,
             footprintList = None,
         )
 
