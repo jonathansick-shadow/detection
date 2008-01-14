@@ -40,7 +40,8 @@ class DetectionStage(lsst.dps.Stage.Stage):
                                   <<  "Began detection stage" \
                                   << DataProperty("exposureId", exposureId) \
                                   << DataProperty("visitTime", visitTime) \
-                                  << DataProperty("filterName", filterName)
+                                  << DataProperty("filterName", filterName) \
+                                  << LogRec.endr
         #
         # Instantiate a Filter object to get the id of filterName
         #

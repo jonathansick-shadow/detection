@@ -66,7 +66,8 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
                    <<  "Threshold computation" \
                    << DataProperty("thresholdSigma", thresh) \
                    << DataProperty("noise", noise) \
-                   << DataProperty("threshold", thresh*noise)
+                   << DataProperty("threshold", thresh*noise) \
+                   << LogRec.endr
 
     ###########
     #
@@ -79,7 +80,8 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
 
     LogRec(useLog, Log.INFO) \
                    <<  "Positive detections" \
-                   << DataProperty("nPositive", len(fpVecPositive))
+                   << DataProperty("nPositive", len(fpVecPositive)) \
+                   << LogRec.endr
 
     ###########
     #
@@ -92,7 +94,8 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
 
     LogRec(useLog, Log.INFO) \
                    <<  "Negative detections" \
-                   << DataProperty("nNegative", len(fpVecNegative))
+                   << DataProperty("nNegative", len(fpVecNegative)) \
+                   << LogRec.endr
 
 
     ###########
