@@ -58,6 +58,12 @@ void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst::fw::DiaSource::Ptr p
      pDia->setColc(xCentroid);
      pDia->setRowc(yCentroid);
      pDia->setFlux(flux);
+     pDia->setFlag4detection(measureFunc.getNumPix());
+
+     lsst::mwi::utils::Trace("detection.Measure", 1,
+			     boost::format("nPix, flag: %d %d") 
+			     %  measureFunc.getNumPix() %  pDia->getFlag4detection());
+     
 }
 
 template<typename ImagePixelT, typename MaskPixelT>
@@ -102,4 +108,9 @@ void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst::fw::DiaSource::Ptr p
      pDia->setColc(xCentroid);
      pDia->setRowc(yCentroid);
      pDia->setFlux(flux);
+     pDia->setFlag4detection(measureFunc.getNumPix());
+
+     lsst::mwi::utils::Trace("detection.Measure", 1,
+			     boost::format("nPix, flag: %d %d") 
+			     %  measureFunc.getNumPix() %  pDia->getFlag4detection());
 }
