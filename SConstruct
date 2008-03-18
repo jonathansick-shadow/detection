@@ -10,6 +10,7 @@ env = scons.makeEnv("detection",
                     [["boost", "boost/version.hpp", "boost_filesystem:C++"],
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
                      ["vw", "vw/Core.h", "vw:C++"],
+                     ["vw", "vw/Core.h", "vwCore:C++"],
                      ["python", "Python.h"],
 		     ["m", "math.h", "m", "sqrt"],
 		     ["cfitsio", "fitsio.h", "cfitsio", "ffopen"],
@@ -39,6 +40,12 @@ Alias("install", env.Install(env['prefix'] + "/bin", glob.glob("bin/*.py")))
 Alias("install", env.InstallEups(env['prefix'] + "/ups", glob.glob("ups/*.table")))
 
 scons.CleanTree(r"*~ core *.so *.os *.o")
+#
+# Build TAGS files
+#
+files = scons.filesToTag()
+if files:
+    env.Command("TAGS", files, "etags -o $TARGET $SOURCES")
 
 env.Declare()
 env.Help("""

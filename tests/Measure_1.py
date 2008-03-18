@@ -5,7 +5,7 @@ Run with:
    python Measure_1.py
 or
    python
-   >>> import unittest; T=load("Measure_1"); unittest.TextTestRunner(verbosity=1).run(T.suite())
+   >>> import Measure_1; Measure_1.run()
 """
 
 import pdb                              # we may want to say pdb.set_trace()
@@ -72,10 +72,6 @@ class MeasureTestCase(unittest.TestCase):
         im.set(0)                       # clear image
         for obj in self.objects:
             obj.insert(im)
-
-        if display:
-            import lsst.fw.Display.ds9 as ds9
-            ds9.mtv(im, frame=0)
         
     def tearDown(self):
         del self.ms
@@ -87,18 +83,23 @@ class MeasureTestCase(unittest.TestCase):
         ycentroid = [2.0, 5.4, 6.0]
         flux = [50.0, 100.0, 20.0]
         
-        ds = detection.DetectionSetD(self.ms, detection.Threshold(10), "FP")
+        ds = detection.DetectionSetD(self.ms, detection.Threshold(10), "DETECTED")
+
+        if display:
+            import lsst.fw.Display.ds9 as ds9
+            ds9.mtv(self.ms, frame=0)
+
         objects = ds.getFootprints()
-        measure = detection.MeasureD(self.ms)
+        measure = detection.MeasureD(self.ms, "DETECTED")
         diaptr = fwCat.DiaSourcePtr()
 
         for i in range(len(objects)):
             diaptr.setId(i)
             measure.measureSource(diaptr, objects[i], 0.0)
-            assert(abs(diaptr.getColc()-xcentroid[i]) < 1.0e-5)
-            assert(abs(diaptr.getRowc()-ycentroid[i]) < 1.0e-5)
-            assert(abs(diaptr.getFlux()-flux[i]) < 1.0e-5)
 
+            self.assertAlmostEqual(diaptr.getColc(), xcentroid[i] + 0.5, 6)
+            self.assertAlmostEqual(diaptr.getRowc(), ycentroid[i] + 0.5, 6)
+            self.assertEqual(diaptr.getFlux(), flux[i])
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -111,5 +112,9 @@ def suite():
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
 
+def run(exit=False):
+    """Run the tests"""
+    tests.run(suite(), exit)
+
 if __name__ == "__main__":
-    tests.run(suite())
+    run(True)

@@ -2,8 +2,11 @@
 Import('env')
 
 env.SharedLibrary(env['eups_product'], map(lambda str: "../src/" + str,
-                                           ["DetectionSet.cc",
+                                           ["CR.cc",
+                                            "DetectionSet.cc",
                                             "Footprint.cc",
+                                            "Interp.cc",
                                             "Peak.cc",
-                                            ]), LIBS=env.getlibs("mwi fw boost wcslib"))
+                                            "PSF.cc",
+                                            ]), LIBS=env.getlibs("mwi fw boost wcslib vw"))
 

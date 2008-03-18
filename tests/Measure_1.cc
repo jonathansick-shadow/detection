@@ -74,7 +74,7 @@ int main(int argc, char**argv) {
     std::vector<Footprint::PtrType>& fpVec = ds.getFootprints();
     lsst::fw::DiaSourceVector outputDiaSources;
 
-    for (int i=0; i<fpVec.size(); i++) {
+    for (unsigned int i=0; i<fpVec.size(); i++) {
 	 DiaSource::Ptr diaPtr(new lsst::fw::DiaSource);
 	 diaPtr->setId(i); // will need to include Exposure id here!
 	 mimg.measureSource(diaPtr, *fpVec[i], 0);

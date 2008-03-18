@@ -8,17 +8,26 @@ Python bindings for detection module
 %feature("autodoc", "1");
 %module(docstring=detectionLib_DOCSTRING) detectionLib
 
+// Suppress swig complaints
+// I had trouble getting %warnfilter to work; hence the pragmas
+#pragma SWIG nowarn=314                 // print is a python keyword (--> _print)
+#pragma SWIG nowarn=362                 // operator=  ignored
+
 %{
 #   include <exception>
 #   include <list>
 #   include <map>
 #   include <boost/cstdint.hpp>
 #   include <boost/shared_ptr.hpp>
+#   include "lsst/detection/CR.h"
 #   include "lsst/detection/Footprint.h"
+#   include "lsst/detection/Interp.h"
 #   include "lsst/detection/Measure.h"
+#   include "lsst/detection/PSF.h"
 %}
 
 %inline %{
+namespace boost { namespace filesystem { } }
 namespace lsst { namespace fw { } }
 namespace lsst { namespace detection { } }
 namespace vw {}
@@ -33,6 +42,13 @@ using namespace vw;
 %}
 
 %include "lsst/mwi/p_lsstSwig.i"
+
+%import "lsst/mwi/data/LsstData.h"
+%import "lsst/mwi/data/Citizen.h"
+%import "lsst/mwi/data/LsstImpl_DC2.h"
+%import "lsst/mwi/data/LsstBase.h"
+%import "lsst/mwi/policy/Policy.h"
+
 %include "lsst/fw/Core/lsstImageTypes.i"     // vw and Image/Mask types and typedefs
 
 %pythoncode %{
@@ -43,6 +59,7 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 %}
 
 %import "lsst/fw/DiaSource.h"
+%ignore lsst::fw::Mask::origin;         // no need to swig origin (and the _wrap.cc file is invalid)
 %import "lsst/fw/Mask.h"
 
 %include "lsst/detection/BCircle.h"
@@ -97,6 +114,28 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 
 %template(MeasureF) lsst::detection::Measure<float, lsst::fw::maskPixelType>;
 %template(MeasureD) lsst::detection::Measure<double, lsst::fw::maskPixelType>;
+
+%template(MaskU) lsst::fw::Mask<maskPixelType>;
+%template(setMaskFromFootprint) setMaskFromFootprint<lsst::fw::maskPixelType>;
+%template(setMaskFromFootprintList) setMaskFromFootprintList<lsst::fw::maskPixelType>;
+
+/************************************************************************************************************/
+
+%include "lsst/detection/PSF.h"
+%include "lsst/detection/CR.h"
+
+%template(findCosmicRays) findCosmicRays<float, lsst::fw::maskPixelType>;
+%template(findCosmicRays) findCosmicRays<double, lsst::fw::maskPixelType>;
+
+/************************************************************************************************************/
+
+%include "lsst/detection/Interp.h"
+
+%boost_shared_ptr(DefectPtrT, Defect);
+%template(DefectListT) std::vector<lsst::detection::Defect::PtrT>;
+
+%template(interpolateOverDefects) interpolateOverDefects<float, lsst::fw::maskPixelType>;
+%template(interpolateOverDefects) interpolateOverDefects<double, lsst::fw::maskPixelType>;
 
 /******************************************************************************/
 // Local Variables: ***

@@ -1,7 +1,9 @@
 #include <vw/Math/BBox.h>
 #include <iostream>
 
-main() {
+int main() {
+    int code = 0;                       // return code
+
      vw::BBox2i bb;
      vw::math::Vector<float,2> point;
 
@@ -10,11 +12,14 @@ main() {
 
      bb.grow(point);
 
-     if (bb.contains(point))
+     if (bb.contains(point)) {
 	  std::cout << "OK" << std::endl;
-     else
+     } else {
 	  std::cout << "Fails" << std::endl;
+          code++;
+     }
 
+     return code;
 }
 
      

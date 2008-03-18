@@ -48,12 +48,12 @@ class FootprintTestCase(unittest.TestCase):
     def testToString(self):
         y, x0, x1 = 10, 100, 101
         s = detection.Span(y, x0, x1)
-        assert s.toString() == toString(y, x0, x1)
+        self.assertEqual(s.toString(), toString(y, x0, x1))
 
     def testBbox(self):
         """Test setBBox"""
         
-        assert self.foot.setBBox() == None
+        self.assertEqual(self.foot.setBBox(), None)
 
     def testGC(self):
         """Check that Footprints are automatically garbage collected (when MemoryTestCase runs)"""
@@ -82,12 +82,12 @@ class FootprintTestCase(unittest.TestCase):
             foot.addSpan(y, x0, x1)
 
         bbox = foot.getBBox()
-        assert bbox.width() == 7 - 1    # N.b. definition of BBox EXCLUDES top right point
-        assert bbox.height() == 2 - 1
-        assert bbox.min().x() == 99
-        assert bbox.min().y() == 10
-        assert bbox.max().x() == 105
-        assert bbox.max().y() == 11
+        self.assertEqual(bbox.width(), 7)
+        self.assertEqual(bbox.height(), 2)
+        self.assertEqual(bbox.min().x(), 99)
+        self.assertEqual(bbox.min().y(), 10)
+        self.assertEqual(bbox.max().x(), 106) # i.e. one past
+        self.assertEqual(bbox.max().y(), 12) #                the last point
 
     def testFootprintFromBBox(self):
         """Create a rectangular Footprint"""
@@ -96,12 +96,12 @@ class FootprintTestCase(unittest.TestCase):
 
         bbox = foot.getBBox()
 
-        assert bbox.width() == 7 - 1    # N.b. definition of BBox EXCLUDES top right point
-        assert bbox.height() == 4 - 1
-        assert bbox.min().x() == 9
-        assert bbox.min().y() == 10
-        assert bbox.max().x() == 15
-        assert bbox.max().y() == 13
+        self.assertEqual(bbox.width(), 7)
+        self.assertEqual(bbox.height(), 4)
+        self.assertEqual(bbox.min().x(), 9)
+        self.assertEqual(bbox.min().y(), 10)
+        self.assertEqual(bbox.max().x(), 16) # i.e. one past
+        self.assertEqual(bbox.max().y(), 14) #              the last point
 
         idImage = fw.ImageU(foot.getRegion().width(), foot.getRegion().height())
         idImage.set(0)
@@ -119,8 +119,8 @@ class FootprintTestCase(unittest.TestCase):
         bc = detection.BCircle2i(detection.Vector2i(x, y), r)
         for i in range(2):
             c = bc.center()
-            assert c.x() == x
-            assert c.y() == y
+            self.assertEqual(c.x(), x)
+            self.assertEqual(c.y(), y)
             self.assertAlmostEqual(bc.radius(), r)
 
             bc = detection.BCircle2i(x, y, r)
@@ -258,5 +258,10 @@ def suite():
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
 
+
+def run(exit=False):
+    """Run the tests"""
+    tests.run(suite(), exit)
+
 if __name__ == "__main__":
-    tests.run(suite())
+    run(True)

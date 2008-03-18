@@ -13,8 +13,6 @@
 
 namespace lsst { namespace detection {
 
-class Footprint;
-
 /*!
  * \brief Describe a range of pixels within an image
  *
@@ -43,7 +41,6 @@ public:
 
     friend class Footprint;
 private:
-    Span(const Span &) {}
     int _y;                             //!< Row that span's in
     int _x0;                            //!< Starting column (inclusive)
     int _x1;                            //!< Ending column (inclusive)
@@ -112,19 +109,26 @@ class Footprint : public lsst::mwi::data::LsstBase {
 public:
     typedef boost::shared_ptr<Footprint> PtrType;
 
+    typedef std::vector<Span::PtrType> SpanListT;
+    typedef SpanListT::iterator span_iterator;
+    typedef SpanListT::const_iterator const_span_iterator;
+
     Footprint(int nspan = 0, const vw::BBox2i region = vw::BBox2i(0, 0, 0, 0));
     Footprint(const vw::BBox2i& bbox, const vw::BBox2i region = vw::BBox2i(0, 0, 0, 0));
     Footprint(const BCircle2i& circle, const vw::BBox2i region = vw::BBox2i(0, 0, 0, 0));
 
     ~Footprint();
 
-    int getId() const { return _id; }   //!< Return the footprint's unique ID
-    std::vector<Span::PtrType> &getSpans() { return _spans; } //!< return the Spans contained in this Footprint
-    const std::vector<Span::PtrType> &getSpans() const { return _spans; } //!< return the Spans contained in this Footprint
+    int getId() const { return _fid; }   //!< Return the footprint's unique ID
+    SpanListT &getSpans() { return _spans; } //!< return the Spans contained in this Footprint
+    const SpanListT &getSpans() const { return _spans; } //!< return the Spans contained in this Footprint
     std::vector<Peak::PtrType> &getPeaks() { return _peaks; } //!< Return the Peaks contained in this Footprint
     int getNpix() const { return _npix; }     //!< Return the number of pixels in this Footprint
 
     const Span& addSpan(const int y, const int x0, const int x1);
+    const Span& Footprint::addSpan(Span const& span);
+
+    void offset(int dx, int dy);
 
     const vw::BBox2i& getBBox() const { return _bbox; } //!< Return the Footprint's bounding box
     const vw::BBox2i& getRegion() const { return _region; } //!< Return the corners of the MaskedImage the footprints live in
@@ -137,18 +141,34 @@ public:
 
     void insertIntoImage(lsst::fw::Image<boost::uint16_t>& idImage, const int id) const;
 private:
-    //Footprint(const Footprint &) {};  // XXX how to I handle LsstBase's copy constructor?
+    Footprint(const Footprint &);       //!< No copy constructor
+    Footprint operator = (Footprint const &) const; //!< no assignment
     static int id;
-    mutable int _id;                    //!< unique ID
+    mutable int _fid;                    //!< unique ID
     int _npix;                          //!< number of pixels in this Footprint
     
-    std::vector<Span::PtrType> &_spans; //!< the Spans contained in this Footprint
+    SpanListT &_spans; //!< the Spans contained in this Footprint
     vw::BBox2i _bbox;                   //!< the Footprint's bounding box
     std::vector<Peak::PtrType> &_peaks; //!< the Peaks lying in this footprint
     const vw::BBox2i _region;           //!< The corners of the MaskedImage the footprints live in
     bool _normalized;                   //!< Are the spans sorted? 
 };
 
+Footprint::PtrType growFootprint(Footprint::PtrType const &foot, int ngrow);
+
+template<typename MaskT>
+MaskT setMaskFromFootprint(typename lsst::fw::Mask<MaskT>::MaskPtrT mask,
+                           Footprint::PtrType const footprint,
+                           MaskT const bitmask);
+template<typename MaskT>
+MaskT setMaskFromFootprintList(typename lsst::fw::Mask<MaskT>::MaskPtrT mask,
+                               std::vector<Footprint::PtrType> const& footprints,
+                               MaskT const bitmask);
+template<typename MaskT>
+Footprint::PtrType footprintAndMask(Footprint::PtrType const & foot,
+                                    typename lsst::fw::Mask<MaskT>::MaskPtrT const & mask,
+                                    MaskT bitmask);
+    
 /************************************************************************************************************/
 /*!
  * \brief A set of Footprints, associated with a MaskedImage
@@ -157,6 +177,8 @@ private:
 template<typename ImagePixelT, typename MaskPixelT>
 class DetectionSet : public lsst::mwi::data::LsstBase {
 public:
+    typedef boost::shared_ptr<DetectionSet> PtrType;
+
     DetectionSet(const lsst::fw::MaskedImage<ImagePixelT, MaskPixelT> &img,
                  const Threshold& threshold,
                  const std::string& planeName = "",

@@ -67,7 +67,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::~DetectionSet() {
 }
 
 /**
- * Find a Detection Set given a MaskedImage and a threshold
+ * \brief Find a Detection Set given a MaskedImage and a threshold
  *
  * Go through an image, finding sets of connected pixels above threshold
  * and assembling them into Footprints;  the resulting set of objects
@@ -97,6 +97,16 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
     const int numRows = img->getRows();
     const int numCols = img->getCols();
     assert (row0 == 0 && col0 == 0);    // address previous comment
+
+    float thresholdParam = -1;          // standard deviation of image (may be needed by Threshold)
+    if (threshold.getType() == Threshold::STDEV || threshold.getType() == Threshold::VARIANCE) {
+        float sd = stddev_channel_value(img->getIVw());
+        if (threshold.getType() == Threshold::VARIANCE) {
+            thresholdParam = sd*sd;
+        } else {
+            thresholdParam = sd;
+        }
+    }
 /*
  * Storage for arrays that identify objects by ID. We want to be able to
  * refer to idp[-1] and idp[numCols], hence the (numCols + 2)
@@ -119,7 +129,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
  * Go through image identifying objects
  */
     typedef typename lsst::fw::Image<ImagePixelType>::pixel_accessor pixAccessT;
-    const float thresholdVal = threshold.getValue();
+    const float thresholdVal = threshold.getValue(thresholdParam);
     const bool polarity = threshold.getPolarity();
 
     pixAccessT rowPtr = img->origin();   // row pointer
@@ -351,7 +361,8 @@ namespace {
 
         bool add(Span *span, const DIRECTION dir, bool addToMask = true);
         bool process(Footprint *fp,     // the footprint that we're building
-                     const Threshold& threshold);	// Threshold
+                     const Threshold& threshold,	// Threshold
+                     const float param = -1);   // parameter that Threshold may need
     private:
         const lsst::fw::Image<ImagePixelType> *_image; // the Image we're searching
         lsst::fw::Mask<MaskPixelType> *_mask; // the mask that tells us where we've got to
@@ -392,7 +403,9 @@ namespace {
      */
     template<typename ImagePixelType, typename MaskPixelType>
     bool StartspanSet<ImagePixelType, MaskPixelType>::process(Footprint *fp,     // the footprint that we're building
-                                                              const Threshold& threshold) { // Threshold
+                                                              const Threshold& threshold, // Threshold
+                                                              const float param // parameter that Threshold may need
+                                                             ) {
         const int row0 = _image->getOffsetRows();
         const int col0 = _image->getOffsetCols();
         const int numRows = _image->getRows();
@@ -435,7 +448,7 @@ namespace {
         bool stop = false;			// should I stop searching for spans?
 
         typedef typename lsst::fw::Image<ImagePixelType>::pixel_accessor pixAccessT;
-        const float thresholdVal = threshold.getValue();
+        const float thresholdVal = threshold.getValue(param);
 	const bool polarity = threshold.getPolarity();
         
         for (int i = sspan->span->y -row0 + di; i < numRows && i >= 0; i += di) {
@@ -731,6 +744,7 @@ typename lsst::fw::Image<boost::uint16_t>::ImagePtrT DetectionSet<ImagePixelType
 //
 // Implicit instantiations
 //
+template class DetectionSet<int, lsst::fw::maskPixelType>;
 template class DetectionSet<float, lsst::fw::maskPixelType>;
 template class DetectionSet<double, lsst::fw::maskPixelType>;
 template class DetectionSet<float, unsigned int>;
