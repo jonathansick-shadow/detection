@@ -242,14 +242,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
     // Define the maskPlane
     //
     const typename lsst::fw::Mask<MaskPixelType>::MaskPtrT mask = maskedImg.getMask();
-    try {
-        int bitPlaneID;
-        mask->getMaskPlane(planeName, bitPlaneID);
-        throw lsst::mwi::exceptions::InvalidParameter("Requested Mask plane is already allocated")
-            << lsst::mwi::data::DataProperty("Plane", planeName);
-    } catch (lsst::fw::NoMaskPlane) {
-        mask->addMaskPlane(planeName);
-    }
+    mask->addMaskPlane(planeName);
 
     MaskPixelType bitPlane = -1;
     mask->getPlaneBitMask(planeName, bitPlane);
@@ -747,4 +740,3 @@ typename lsst::fw::Image<boost::uint16_t>::ImagePtrT DetectionSet<ImagePixelType
 template class DetectionSet<int, lsst::fw::maskPixelType>;
 template class DetectionSet<float, lsst::fw::maskPixelType>;
 template class DetectionSet<double, lsst::fw::maskPixelType>;
-template class DetectionSet<float, unsigned int>;
