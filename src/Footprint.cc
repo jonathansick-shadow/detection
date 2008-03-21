@@ -521,12 +521,7 @@ Footprint::PtrType lsst::detection::growFootprint(
 	}
     }
 
-#define TICKET277 0
-#if TICKET277
     boost::shared_ptr<FixedKernel> circle(new FixedKernel(*circle_im));
-#else
-    boost::shared_ptr<FixedKernel<double> > circle(new FixedKernel<double>(*circle_im));
-#endif
     //
     // For DC2, the convolve operations only work with MaskedImages (not Images)
     //
