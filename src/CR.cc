@@ -378,6 +378,7 @@ lsst::detection::findCosmicRays(MaskedImage<ImageT, MaskT> &image, ///< Image to
  */
     int nextra = 0;                     // number of pixels added to list of CRs
     for (int i = 0; i != niteration; ++i) {
+        TTrace<1>("detection.CR", "Starting iteration %d", i);
         for (std::vector<Footprint::PtrType>::iterator fiter = CRs.begin(); fiter != CRs.end(); fiter++) {
             Footprint::PtrType cr = *fiter;
 /*
