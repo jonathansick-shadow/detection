@@ -210,7 +210,7 @@ class DetectionSetTestCase(unittest.TestCase):
         for i in range(len(objects)):
             for sp in objects[i].getSpans():
                 for x in range(sp.getX0(), sp.getX1() + 1):
-                    self.assertEqual(mask.getPtr(x, sp.getY()), 1)
+                    self.assertEqual(mask.getVal(x, sp.getY()), mask.getPlaneBitMask("OBJECT"))
 
     def testFootprintsImageId(self):
         """Check that we can insert footprints into an Image"""
@@ -229,7 +229,7 @@ class DetectionSetTestCase(unittest.TestCase):
         for i in range(len(objects)):
             for sp in objects[i].getSpans():
                 for x in range(sp.getX0(), sp.getX1() + 1):
-                    self.assertEqual(idImage.getPtr(x, sp.getY()), objects[i].getId())
+                    self.assertEqual(idImage.getVal(x, sp.getY()), objects[i].getId())
 
 
     def testDetectionSetImageId(self):
@@ -244,7 +244,7 @@ class DetectionSetTestCase(unittest.TestCase):
         for i in range(len(objects)):
             for sp in objects[i].getSpans():
                 for x in range(sp.getX0(), sp.getX1() + 1):
-                    self.assertEqual(idImage.getPtr(x, sp.getY()), i + 1)
+                    self.assertEqual(idImage.getVal(x, sp.getY()), i + 1)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
