@@ -126,7 +126,7 @@ public:
     int getNpix() const { return _npix; }     //!< Return the number of pixels in this Footprint
 
     const Span& addSpan(const int y, const int x0, const int x1);
-    const Span& Footprint::addSpan(Span const& span);
+    const Span& addSpan(Span const& span);
 
     void offset(int dx, int dy);
 
