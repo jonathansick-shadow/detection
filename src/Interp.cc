@@ -14,13 +14,13 @@
 #include <limits>
 #include <boost/format.hpp>
 
-#include <lsst/mwi/utils/Trace.h>
-#include <lsst/mwi/exceptions.h>
-#include <lsst/fw/MaskedImage.h>
-#include <lsst/fw/PixelAccessors.h>
+#include <lsst/pex/logging/Trace.h>
+#include <lsst/pex/exceptions.h>
+#include <lsst/afw/MaskedImage.h>
+#include <lsst/afw/PixelAccessors.h>
 #include "lsst/detection/Interp.h"
 
-using namespace lsst::fw;
+using namespace lsst::afw;
 using namespace lsst::detection;
 
 typedef std::vector<Defect::PtrT>::iterator Defect_iterT;
@@ -166,11 +166,11 @@ classify_defects(std::vector<Defect::PtrT> const & badList, // list of bad thing
 template<typename ImageT, typename MaskT>
 static void do_defects(std::vector<Defect::PtrT> const & badList, // list of bad things
                        int const y,     // Row that we should fix
-                       typename lsst::fw::MaskedImage<ImageT, MaskT> & mi, // data to fix
+                       typename lsst::afw::MaskedImage<ImageT, MaskT> & mi, // data to fix
                        MaskT const interpBit, // bit to set when we interpolated
                        int min			// minimum acceptable value
                       ) {
-    typedef typename lsst::fw::MaskedPixelAccessor<ImageT, MaskT> MIAccessorT;
+    typedef typename lsst::afw::MaskedPixelAccessor<ImageT, MaskT> MIAccessorT;
 
     int const ncol = static_cast<int>(mi.getCols());
     
@@ -761,7 +761,7 @@ static void do_defects(std::vector<Defect::PtrT> const & badList, // list of bad
                 break;
               case 033:		/* ##.##, <noise^2> = 0 */
                 /* These coefficients are also available as
-                   lsst::fw::interp::interp_1_c1 and lsst::fw::interp::interp_1_c2 */
+                   lsst::afw::interp::interp_1_c1 and lsst::afw::interp::interp_1_c2 */
                 val = -0.2737*out1_2 + 0.7737*out1_1 + 0.7737*out2_1 - 0.2737*out2_2;
                 out[bad_x2] = (val < min) ? 0.5*(out1_1 + out2_1) : val;
                 
@@ -1839,7 +1839,7 @@ void lsst::detection::interpolateOverDefects(MaskedImage<ImageT, MaskT> &image, 
                                              PSF const &, ///< the Image's PSF
                                              std::vector<lsst::detection::Defect::PtrT> &badList
                                             ) {
-    typedef typename lsst::fw::MaskedPixelAccessor<ImageT, MaskT> MIAccessorT;
+    typedef typename lsst::afw::MaskedPixelAccessor<ImageT, MaskT> MIAccessorT;
 /*
  * Setup desired mask planes
  */
@@ -1872,7 +1872,7 @@ void lsst::detection::interpolateOverDefects(MaskedImage<ImageT, MaskT> &image, 
  * suitable thought.
  */
 template <typename ImageT, typename MaskT>
-ImageT lsst::fw::interp::singlePixel(int x, ///< column coordinate of the pixel in question
+ImageT lsst::afw::interp::singlePixel(int x, ///< column coordinate of the pixel in question
                                      int y, ///< row coordinate of the pixel in question
                                      MaskedImage<ImageT, MaskT> const & image, ///< in this image
                                      bool horizontal, ///< interpolate horizontally?
@@ -1979,12 +1979,12 @@ ImageT lsst::fw::interp::singlePixel(int x, ///< column coordinate of the pixel 
 typedef float imagePixelType;
 
 template
-void lsst::detection::interpolateOverDefects(lsst::fw::MaskedImage<imagePixelType, maskPixelType> &image,
+void lsst::detection::interpolateOverDefects(lsst::afw::MaskedImage<imagePixelType, maskPixelType> &image,
                                              PSF const &psf,
                                              std::vector<lsst::detection::Defect::PtrT> &badList
                                             );
 template
-imagePixelType lsst::fw::interp::singlePixel(int x, int y,
+imagePixelType lsst::afw::interp::singlePixel(int x, int y,
                                              MaskedImage<imagePixelType, maskPixelType> const & image,
                                              bool horizontal, imagePixelType minval);
 //
@@ -1992,12 +1992,12 @@ imagePixelType lsst::fw::interp::singlePixel(int x, int y,
 //
 #if 1
 template
-void lsst::detection::interpolateOverDefects(lsst::fw::MaskedImage<double, maskPixelType> &image,
+void lsst::detection::interpolateOverDefects(lsst::afw::MaskedImage<double, maskPixelType> &image,
                                              PSF const &psf,
                                              std::vector<lsst::detection::Defect::PtrT> &badList
                                             );
 template
-double lsst::fw::interp::singlePixel(int x, int y,
+double lsst::afw::interp::singlePixel(int x, int y,
                                      MaskedImage<double, maskPixelType> const & image,
                                      bool horizontal, double minval);
 #endif

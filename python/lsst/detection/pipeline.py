@@ -1,10 +1,10 @@
 import lsst.dps.Stage
-import lsst.fw.Core.fwLib as fw
-import lsst.mwi.persistence as mwiper
-import lsst.mwi.utils as mwiu
-from lsst.mwi.logging import Log
-from lsst.mwi.logging import LogRec
-from lsst.mwi.data import DataProperty
+import lsst.afw.Core.afwLib as afw
+import lsst.daf.persistence as dafper
+import lsst.pex.logging as logging
+from lsst.pex.logging import Log
+from lsst.pex.logging import LogRec
+from lsst.daf.base import DataProperty
 import Detection
 
 __all__ = ["DetectionStage"]
@@ -17,8 +17,8 @@ class DetectionStage(lsst.dps.Stage.Stage):
 
     def process(self):
 
-        mwiu.Trace_setVerbosity("lsst.detection", 5)
-        mwiu.Trace("lsst.detection.DetectionStage", 3, 'Python DetectionStage process : _rank %i stageId %d' % (self._rank, self.stageId))
+        logging.Trace_setVerbosity("lsst.detection", 5)
+        logging.Trace("lsst.detection.DetectionStage", 3, 'Python DetectionStage process : _rank %i stageId %d' % (self._rank, self.stageId))
         activeClipboard = self.inputQueue.getNextDataset()
 
         ###########
@@ -45,10 +45,10 @@ class DetectionStage(lsst.dps.Stage.Stage):
         #
         # Instantiate a Filter object to get the id of filterName
         #
-        dbLocation = mwiper.LogicalLocation('mysql://lsst10.ncsa.uiuc.edu:3306/test')
-        filterDB = fw.Filter(dbLocation, filterName)
+        dbLocation = dafper.LogicalLocation('mysql://lsst10.ncsa.uiuc.edu:3306/test')
+        filterDB = afw.Filter(dbLocation, filterName)
         filterId = filterDB.getId()
-        mwiu.Trace("lsst.detection.DetectionStage", 3, 'FilterName %s FilterId %d' % (filterName, filterId))
+        logging.Trace("lsst.detection.DetectionStage", 3, 'FilterName %s FilterId %d' % (filterName, filterId))
        
         differenceImageExposure = activeClipboard.get('DifferenceExposure')
 

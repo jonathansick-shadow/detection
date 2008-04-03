@@ -4,14 +4,14 @@
 // Describe an image's PSF
 //
 #include <boost/shared_ptr.hpp>
-#include <lsst/mwi/data.h>
+#include <lsst/daf/data.h>
 
 namespace lsst { namespace detection {
 
 /*!
  * \brief Represent an image's PSF
  */
-class PSF : public lsst::mwi::data::LsstBase {
+class PSF : public lsst::daf::data::LsstBase {
 public:
     typedef boost::shared_ptr<PSF> PtrT;
 

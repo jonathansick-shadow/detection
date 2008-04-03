@@ -1,23 +1,23 @@
 template<typename ImagePixelT, typename MaskPixelT>
-Measure<ImagePixelT, MaskPixelT>::Measure(lsst::fw::MaskedImage<ImagePixelT, MaskPixelT> &img, const std::string & footPrintPlaneName) 
-     : lsst::mwi::data::LsstBase(typeid(this)), _footPrintPlaneName(footPrintPlaneName)
+Measure<ImagePixelT, MaskPixelT>::Measure(lsst:afw::MaskedImage<ImagePixelT, MaskPixelT> &img, const std::string & footPrintPlaneName) 
+     : lsst::daf::data::LsstBase(typeid(this)), _footPrintPlaneName(footPrintPlaneName)
 {
      _img = img;
      _selector = NULL;
 }
 
 template<typename ImagePixelT, typename MaskPixelT>
-Measure<ImagePixelT, MaskPixelT>::Measure(lsst::fw::MaskedImage<ImagePixelT, MaskPixelT> &img,
+Measure<ImagePixelT, MaskPixelT>::Measure(lsst:afw::MaskedImage<ImagePixelT, MaskPixelT> &img,
 					  const std::string & footPrintPlaneName,
-					  lsst::fw::MaskPixelBooleanFunc<MaskPixelT> &selector) 
-     : lsst::mwi::data::LsstBase(typeid(this)), _footPrintPlaneName(footPrintPlaneName)
+					  lsst:afw::MaskPixelBooleanFunc<MaskPixelT> &selector) 
+     : lsst::daf::data::LsstBase(typeid(this)), _footPrintPlaneName(footPrintPlaneName)
 {
      _img = img;
      _selector = &selector;
 }
 
 template<typename ImagePixelT, typename MaskPixelT>
-void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst::fw::DiaSource::Ptr pDia, const Footprint &fp, float background)
+void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst:afw::DiaSource::Ptr pDia, const Footprint &fp, float background)
 {
 /* Plan:
    1. Define a MeasurePixProcFunc derived from PixelProcessingFunc
@@ -33,7 +33,7 @@ void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst::fw::DiaSource::Ptr p
      vw::Vector<float, 2> bbMin = bbox.min();
      vw::Vector<float, 2> bbMax = bbox.max();
 
-     typename lsst::fw::MaskedImage<ImagePixelT, MaskPixelT>::MaskedImagePtrT fpImage = _img.getSubImage(fp.getBBox());
+     typename lsst:afw::MaskedImage<ImagePixelT, MaskPixelT>::MaskedImagePtrT fpImage = _img.getSubImage(fp.getBBox());
      *fpImage -= background;
 
      MeasurePixProcFunc<ImagePixelT, MaskPixelT> measureFunc(*fpImage, _footPrintPlaneName);
@@ -45,12 +45,12 @@ void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst::fw::DiaSource::Ptr p
      float yCentroid = fpImage->getOffsetRows() + measureFunc.getYCentroid();
      float flux = measureFunc.getFlux();
 
-     lsst::mwi::utils::Trace("detection.Measure", 1,
+     lsst::daf::utils::Trace("detection.Measure", 1,
 			     boost::format("nPix, flux, xCen, yCen: %d %f %f %f") 
 			     %  measureFunc.getNumPix() %  measureFunc.getFlux()
 			     % xCentroid % yCentroid);
 
-     lsst::mwi::utils::Trace("detection.Measure", 2,
+     lsst::daf::utils::Trace("detection.Measure", 2,
 			     boost::format("(x,y)-(x,y) nPix(fp), nPi: %f %f %f %f %d %d") 
 			     % bbMin[0] % bbMin[1] % bbMax[0] % bbMax[1]
 			     % fp.getNpix() %  measureFunc.getNumPix());
@@ -60,14 +60,14 @@ void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst::fw::DiaSource::Ptr p
      pDia->setFlux(flux);
      pDia->setFlag4detection(measureFunc.getNumPix());
 
-     lsst::mwi::utils::Trace("detection.Measure", 1,
+     lsst::daf::utils::Trace("detection.Measure", 1,
 			     boost::format("nPix, flag: %d %d") 
 			     %  measureFunc.getNumPix() %  pDia->getFlag4detection());
      
 }
 
 template<typename ImagePixelT, typename MaskPixelT>
-void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst::fw::DiaSource::Ptr pDia, Footprint::PtrType fpPtr, float background)
+void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst:afw::DiaSource::Ptr pDia, Footprint::PtrType fpPtr, float background)
 {
 /* Plan:
    1. Define a MeasurePixProcFunc derived from PixelProcessingFunc
@@ -83,7 +83,7 @@ void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst::fw::DiaSource::Ptr p
      vw::Vector<float, 2> bbMin = bbox.min();
      vw::Vector<float, 2> bbMax = bbox.max();
 
-     typename lsst::fw::MaskedImage<ImagePixelT, MaskPixelT>::MaskedImagePtrT fpImage = _img.getSubImage(fpPtr->getBBox());
+     typename lsst:afw::MaskedImage<ImagePixelT, MaskPixelT>::MaskedImagePtrT fpImage = _img.getSubImage(fpPtr->getBBox());
      *fpImage -= background;
 
      MeasurePixProcFunc<ImagePixelT, MaskPixelT> measureFunc(*fpImage, _footPrintPlaneName);
@@ -95,12 +95,12 @@ void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst::fw::DiaSource::Ptr p
      float yCentroid = fpImage->getOffsetRows() + measureFunc.getYCentroid();
      float flux = measureFunc.getFlux();
 
-     lsst::mwi::utils::Trace("detection.Measure", 1,
+     lsst::pex::logging::Trace("detection.Measure", 1,
 			     boost::format("nPix, flux, xCen, yCen: %d %f %f %f") 
 			     %  measureFunc.getNumPix() %  measureFunc.getFlux()
 			     % xCentroid % yCentroid);
 
-     lsst::mwi::utils::Trace("detection.Measure", 2,
+     lsst::pex::logging::Trace("detection.Measure", 2,
 			     boost::format("(x,y)-(x,y) nPix(fp), nPi: %f %f %f %f %d %d") 
 			     % bbMin[0] % bbMin[1] % bbMax[0] % bbMax[1]
 			     % fpPtr->getNpix() %  measureFunc.getNumPix());
@@ -110,7 +110,7 @@ void Measure<ImagePixelT, MaskPixelT>::measureSource( lsst::fw::DiaSource::Ptr p
      pDia->setFlux(flux);
      pDia->setFlag4detection(measureFunc.getNumPix());
 
-     lsst::mwi::utils::Trace("detection.Measure", 1,
+     lsst::pex::logging::Trace("detection.Measure", 1,
 			     boost::format("nPix, flag: %d %d") 
 			     %  measureFunc.getNumPix() %  pDia->getFlag4detection());
 }

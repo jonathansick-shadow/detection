@@ -13,18 +13,18 @@
 #include <typeinfo>
 #include <boost/format.hpp>
 
-#include <lsst/mwi/utils/Trace.h>
-#include <lsst/mwi/exceptions.h>
-#include <lsst/fw/MaskedImage.h>
-#include <lsst/fw/PixelAccessors.h>
+#include <lsst/pex/logging/Trace.h>
+#include <lsst/pex/exceptions.h>
+#include <lsst/afw/MaskedImage.h>
+#include <lsst/afw/PixelAccessors.h>
 #include "lsst/detection/CR.h"
 #include "lsst/detection/Interp.h"
 
-namespace lsst { namespace fw { namespace math {
+namespace lsst { namespace afw { namespace math {
     double gaussdev() { return 1; }
 }}}
 
-using namespace lsst::fw;
+using namespace lsst::afw;
 using namespace lsst::detection;
 
 /************************************************************************************************************/
@@ -73,8 +73,8 @@ template <typename ImageT, typename MaskT>
 static bool
 is_cr_pixel(ImageT *corr,               // corrected value
             MaskedPixelAccessor<ImageT, MaskT> const mi_row_m, // previous row
-            lsst::fw::MaskedPixelAccessor<ImageT, MaskT> const mi_row_0, // this row
-            lsst::fw::MaskedPixelAccessor<ImageT, MaskT> const mi_row_p, // next row
+            lsst::afw::MaskedPixelAccessor<ImageT, MaskT> const mi_row_0, // this row
+            lsst::afw::MaskedPixelAccessor<ImageT, MaskT> const mi_row_p, // next row
 	    int const min_sigma,	// min_sigma, or -threshold if negative
 	    float const thres_h, float const thres_v, float const thres_d, // for condition #3
 	    float const bkgd,           // unsubtracted background level
@@ -165,7 +165,7 @@ static void checkSpanForCRs(Footprint *extras,
                             float const cond3_fac, // fiddle factor for condition #3
                             bool const keep ///< if true, don't remove the CRs
                            ) {
-    typedef typename lsst::fw::MaskedPixelAccessor<ImageT, MaskT> MIAccessorT;
+    typedef typename lsst::afw::MaskedPixelAccessor<ImageT, MaskT> MIAccessorT;
 
     int const i0 = x0 - 1;
     
@@ -201,10 +201,10 @@ std::vector<Footprint::PtrType>
 lsst::detection::findCosmicRays(MaskedImage<ImageT, MaskT> &image, ///< Image to search
                                 PSF const &psf,          ///< the Image's PSF
                                 float const bkgd,        ///< unsubtracted background of frame, DN
-                                lsst::mwi::policy::Policy const &policy, ///< Policy directing the behavior               
+                                lsst::pex::policy::Policy const &policy, ///< Policy directing the behavior               
                                 bool const keep          ///< if true, don't remove the CRs
                                ) {
-    typedef typename lsst::fw::MaskedPixelAccessor<ImageT, MaskT> MIAccessorT;
+    typedef typename lsst::afw::MaskedPixelAccessor<ImageT, MaskT> MIAccessorT;
 
     // Parse the Policy
     const double e_per_dn = policy.getDouble("CR.e_per_dn");    // gain of amplifier, e^-/DN
@@ -579,7 +579,7 @@ static void removeCR(MaskedImage<ImageT, MaskT> & mi,  // image to search
     int tmp;
     SPANMASK *sm;			/* The region's masks */
 #endif
-    typedef typename lsst::fw::MaskedPixelAccessor<ImageT, MaskT> MIAccessorT;
+    typedef typename lsst::afw::MaskedPixelAccessor<ImageT, MaskT> MIAccessorT;
 
     int const ncol = static_cast<int>(mi.getCols()); // cast away "unsigned"
     int const nrow = static_cast<int>(mi.getRows());
@@ -741,7 +741,7 @@ static void removeCR(MaskedImage<ImageT, MaskT> & mi,  // image to search
 	       
                     if(val_h == std::numeric_limits<ImageT>::min()) {
                         if(val_v == std::numeric_limits<ImageT>::min()) { // Still no good value. Guess wildly
-                            min = bkgd + sqrt(*row.variance)*lsst::fw::math::gaussdev();
+                            min = bkgd + sqrt(*row.variance)*lsst::afw::math::gaussdev();
                         } else {
                             min = val_v;
                         }
@@ -777,10 +777,10 @@ typedef float imagePixelType;
 
 template
 std::vector<lsst::detection::Footprint::PtrType>
-lsst::detection::findCosmicRays(lsst::fw::MaskedImage<imagePixelType, maskPixelType> &image,
+lsst::detection::findCosmicRays(lsst::afw::MaskedImage<imagePixelType, maskPixelType> &image,
                                 PSF const &psf,
                                 float const bkgd,
-                                lsst::mwi::policy::Policy const& policy,
+                                lsst::pex::policy::Policy const& policy,
                                 bool const keep = false
                                );
 
@@ -790,10 +790,10 @@ lsst::detection::findCosmicRays(lsst::fw::MaskedImage<imagePixelType, maskPixelT
 #if 1
 template
 std::vector<lsst::detection::Footprint::PtrType>
-lsst::detection::findCosmicRays(lsst::fw::MaskedImage<double, maskPixelType> &image,
+lsst::detection::findCosmicRays(lsst::afw::MaskedImage<double, maskPixelType> &image,
                                 PSF const &psf,
                                 float const bkgd,
-                                lsst::mwi::policy::Policy const& policy,
+                                lsst::pex::policy::Policy const& policy,
                                 bool const keep = false
                                );
 #endif

@@ -4,24 +4,24 @@
 #include <list>
 #include <cmath>
 #include <boost/shared_ptr.hpp>
-#include <lsst/mwi/data/LsstBase.h>
+#include <lsst/daf/data/LsstBase.h>
 
 namespace lsst { namespace detection {
 /*!
  * \brief A peak in an image
  */
-class Peak : public lsst::mwi::data::Citizen {
+class Peak : public lsst::daf::base::Citizen {
 public:
     typedef boost::shared_ptr<Peak> PtrType;
 
     explicit Peak(int ix,               //!< column pixel
                   int iy)               //!< row pixel
-        : lsst::mwi::data::Citizen(typeid(*this)),
+        : lsst::daf::base::Citizen(typeid(*this)),
           _id(++id),
           _ix(ix), _iy(iy), _fx(ix), _fy(iy) {};
     explicit Peak(float fx = NAN,       //!< column centre
                   float fy = NAN)       //!< row centre
-        : lsst::mwi::data::Citizen(typeid(*this)),
+        : lsst::daf::base::Citizen(typeid(*this)),
           _id(++id),
           _ix(fx > 0 ? static_cast<int>(fx) : -static_cast<int>(-fx) - 1),
           _iy(fy > 0 ? static_cast<int>(fy) : -static_cast<int>(-fy) - 1),

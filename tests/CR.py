@@ -14,11 +14,11 @@ import os
 from math import *
 import unittest
 import eups
-import lsst.mwi.tests as tests
-import lsst.mwi.utils as mwiu
-import lsst.mwi.policy as policy
-import lsst.fw.Core.fwLib as fw
-import lsst.fw.Display.ds9 as ds9
+import lsst.daf.tests as tests
+import lsst.pex.logging as logging
+import lsst.pex.policy as policy
+import lsst.afw.Core.afwLib as afw
+import lsst.afw.Display.ds9 as ds9
 import lsst.detection.detectionLib as detection
 import lsst.detection.defects as defects
 
@@ -26,7 +26,7 @@ try:
     type(verbose)
 except NameError:
     verbose = 0
-    mwiu.Trace_setVerbosity("detection.CR", verbose)
+    logging.Trace_setVerbosity("detection.CR", verbose)
 
 try:
     type(display)
@@ -34,18 +34,18 @@ except NameError:
     display = False
 
     if display:
-        import lsst.fw.Display.ds9 as ds9
+        import lsst.afw.Display.ds9 as ds9
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 class CosmicRayTestCase(unittest.TestCase):
     """A test case for Cosmic Ray detection"""
     def setUp(self):
-        self.mi = fw.MaskedImageD()
+        self.mi = afw.MaskedImageD()
         self.FWHM = 5                   # pixels
         self.psf = detection.dgPSF(self.FWHM/(2*sqrt(2*log(2))))
-        if eups.productDir("fwData"):
-            maskedImage = os.path.join(eups.productDir("fwData"), "CFHT", "D4", "cal-53535-i-797722_1")
+        if eups.productDir("afwdata"):
+            maskedImage = os.path.join(eups.productDir("afwdata"), "CFHT", "D4", "cal-53535-i-797722_1")
         else:
             maskedImage = "/u/rhl/LSST/imageproc-277/diffImage"
             
@@ -74,7 +74,7 @@ class CosmicRayTestCase(unittest.TestCase):
         badPixels = defects.policyToBadRegionList(os.path.join(os.environ["DETECTION_DIR"], "pipeline/BadPixels.paf"))
         detection.interpolateOverDefects(self.mi, self.psf, badPixels)
 
-        background = fw.mean_channel_value(self.mi.getImage())
+        background = afw.mean_channel_value(self.mi.getImage())
         crs = detection.findCosmicRays(self.mi, self.psf, background, self.policy)
 
         if display:

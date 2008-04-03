@@ -28,12 +28,12 @@ Python bindings for detection module
 
 %inline %{
 namespace boost { namespace filesystem { } }
-namespace lsst { namespace fw { } }
+namespace lsst { namespace afw { } }
 namespace lsst { namespace detection { } }
 namespace vw {}
     
 using namespace lsst;
-using namespace lsst::fw;
+using namespace lsst::afw;
 using namespace lsst::detection;
 using namespace vw;
 %}
@@ -41,26 +41,26 @@ using namespace vw;
 %init %{
 %}
 
-%include "lsst/mwi/p_lsstSwig.i"
+%include "lsst/base/p_lsstSwig.i"
 
-%import "lsst/mwi/data/LsstData.h"
-%import "lsst/mwi/data/Citizen.h"
-%import "lsst/mwi/data/LsstImpl_DC2.h"
-%import "lsst/mwi/data/LsstBase.h"
-%import "lsst/mwi/policy/Policy.h"
+%import "lsst/daf/data/LsstData.h"
+%import "lsst/daf/base/Citizen.h"
+%import "lsst/daf/data/LsstImpl_DC2.h"
+%import "lsst/daf/data/LsstBase.h"
+%import "lsst/pex/policy/Policy.h"
 
-%include "lsst/fw/Core/lsstImageTypes.i"     // vw and Image/Mask types and typedefs
+%include "lsst/afw/Core/lsstImageTypes.i"     // vw and Image/Mask types and typedefs
 
 %pythoncode %{
-def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python/lsst/fw/Core/detectionLib.i $"):
-    """Return a version given a HeadURL string; default: fw's version"""
+def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DMS/afw/trunk/python/lsst/afw/Core/detectionLib.i $"):
+    """Return a version given a HeadURL string; default: afw's version"""
     return guessSvnVersion(HeadURL)
 
 %}
 
-%import "lsst/fw/DiaSource.h"
-%ignore lsst::fw::Mask::origin;         // no need to swig origin (and the _wrap.cc file is invalid)
-%import "lsst/fw/Mask.h"
+%import "lsst/afw/DiaSource.h"
+%ignore lsst::afw::Mask::origin;         // no need to swig origin (and the _wrap.cc file is invalid)
+%import "lsst/afw/Mask.h"
 
 %include "lsst/detection/BCircle.h"
 %include "lsst/detection/Peak.h"
@@ -109,23 +109,23 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 %boost_shared_ptr(FootprintPtrT, Footprint);
 %template(FootprintContainerT) std::vector<lsst::detection::Footprint::PtrType>;
 
-%template(DetectionSetF) lsst::detection::DetectionSet<float, lsst::fw::maskPixelType>;
-%template(DetectionSetD) lsst::detection::DetectionSet<double, lsst::fw::maskPixelType>;
+%template(DetectionSetF) lsst::detection::DetectionSet<float, lsst::afw::maskPixelType>;
+%template(DetectionSetD) lsst::detection::DetectionSet<double, lsst::afw::maskPixelType>;
 
-%template(MeasureF) lsst::detection::Measure<float, lsst::fw::maskPixelType>;
-%template(MeasureD) lsst::detection::Measure<double, lsst::fw::maskPixelType>;
+%template(MeasureF) lsst::detection::Measure<float, lsst::afw::maskPixelType>;
+%template(MeasureD) lsst::detection::Measure<double, lsst::afw::maskPixelType>;
 
-%template(MaskU) lsst::fw::Mask<maskPixelType>;
-%template(setMaskFromFootprint) setMaskFromFootprint<lsst::fw::maskPixelType>;
-%template(setMaskFromFootprintList) setMaskFromFootprintList<lsst::fw::maskPixelType>;
+%template(MaskU) lsst::afw::Mask<maskPixelType>;
+%template(setMaskFromFootprint) setMaskFromFootprint<lsst::afw::maskPixelType>;
+%template(setMaskFromFootprintList) setMaskFromFootprintList<lsst::afw::maskPixelType>;
 
 /************************************************************************************************************/
 
 %include "lsst/detection/PSF.h"
 %include "lsst/detection/CR.h"
 
-%template(findCosmicRays) findCosmicRays<float, lsst::fw::maskPixelType>;
-%template(findCosmicRays) findCosmicRays<double, lsst::fw::maskPixelType>;
+%template(findCosmicRays) findCosmicRays<float, lsst::afw::maskPixelType>;
+%template(findCosmicRays) findCosmicRays<double, lsst::afw::maskPixelType>;
 
 /************************************************************************************************************/
 
@@ -134,8 +134,8 @@ def version(HeadURL = r"$HeadURL: svn+ssh://svn.lsstcorp.org/DC2/fw/trunk/python
 %boost_shared_ptr(DefectPtrT, Defect);
 %template(DefectListT) std::vector<lsst::detection::Defect::PtrT>;
 
-%template(interpolateOverDefects) interpolateOverDefects<float, lsst::fw::maskPixelType>;
-%template(interpolateOverDefects) interpolateOverDefects<double, lsst::fw::maskPixelType>;
+%template(interpolateOverDefects) interpolateOverDefects<float, lsst::afw::maskPixelType>;
+%template(interpolateOverDefects) interpolateOverDefects<double, lsst::afw::maskPixelType>;
 
 /******************************************************************************/
 // Local Variables: ***

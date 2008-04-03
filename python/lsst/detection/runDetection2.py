@@ -3,12 +3,12 @@ def runDet(diaPath):
     import sys
     import optparse
 
-    import lsst.mwi.data as mwiData
-    import lsst.mwi.policy
-    import lsst.fw.Core.fwLib as fw
-    import lsst.mwi.utils
-    import lsst.fw.Core.fwLib as fw
-    import lsst.fw.Core.fwCatalog as fwCat
+    import lsst.daf.data as dafBase
+    import lsst.pex.policy
+    import lsst.afw.Core.afwLib as afw
+    import lsst.pex.logging
+    import lsst.afw.Core.afwLib as afw
+    import lsst.afw.Core.afwCatalog as afwCat
     import lsst.detection.detectionLib as det
     import Detection
 
@@ -22,12 +22,12 @@ def runDet(diaPath):
 
     policyPath = defPolicyPath
 
-    diaExposure = fw.ExposureF()
+    diaExposure = afw.ExposureF()
     diaExposure.readFits(diaPath)
     diaMaskedImage = diaExposure.getMaskedImage()
     diaWCS = diaExposure.getWcs()
 
-    policy = lsst.mwi.policy.Policy.createPolicy(policyPath)
+    policy = lsst.pex.policy.Policy.createPolicy(policyPath)
 
     diaSources = Detection.detection(diaExposure, policy)
 
@@ -37,13 +37,13 @@ def runDet(diaPath):
 
 
 def testIt(diaPath):
-    import lsst.mwi.data as mwiData
+    import lsst.daf.data as dafBase
     
     runDet(diaPath)
     # check for memory leaks
     memId0 = 0
-    if mwiData.Citizen_census(0, memId0) != 0:
-        print mwiData.Citizen_census(0, memId0), "Objects leaked:"
-        print mwiData.Citizen_census(mwiData.cout, memId0)
+    if dafBase.Citizen_census(0, memId0) != 0:
+        print dafBase.Citizen_census(0, memId0), "Objects leaked:"
+        print dafBase.Citizen_census(dafBase.cout, memId0)
     else:
         print "No Objects leaked"

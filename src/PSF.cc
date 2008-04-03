@@ -12,7 +12,7 @@
 using namespace lsst::detection;
 
 lsst::detection::PSF::PSF() :
-    lsst::mwi::data::LsstBase(typeid(this)),
+    lsst::daf::data::LsstBase(typeid(this)),
     _A(1)
 {
     ;

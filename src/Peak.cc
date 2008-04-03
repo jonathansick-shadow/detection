@@ -6,8 +6,8 @@
 #include <string>
 #include <typeinfo>
 #include <boost/format.hpp>
-#include "lsst/mwi/utils/Trace.h"
-#include "lsst/mwi/exceptions.h"
+#include "lsst/pex/logging/Trace.h"
+#include "lsst/pex/exceptions.h"
 #include "lsst/detection/Peak.h"
 
 using namespace lsst::detection;

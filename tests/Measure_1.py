@@ -10,17 +10,17 @@ or
 
 import pdb                              # we may want to say pdb.set_trace()
 import unittest
-import lsst.mwi.tests as tests
-import lsst.mwi.utils as mwiu
-import lsst.fw.Core.fwLib as fw
-import lsst.fw.Core.fwCatalog as fwCat
+import lsst.daf.tests as tests
+import lsst.pex.logging as logging
+import lsst.afw.Core.afwLib as afw
+import lsst.afw.Core.afwCatalog as afwCat
 import lsst.detection.detectionLib as detection
 
 try:
     type(verbose)
 except NameError:
     verbose = 0
-    mwiu.Trace_setVerbosity("detection.Measure", verbose)
+  logging.Trace_setVerbosity("detection.Measure", verbose)
 
 try:
     type(display)
@@ -59,7 +59,7 @@ class MeasureTestCase(unittest.TestCase):
             return True
     
     def setUp(self):
-        self.ms = fw.MaskedImageD(12, 8)
+        self.ms = afw.MaskedImageD(12, 8)
         im = self.ms.getImage()
         #
         # Objects that we should detect
@@ -86,12 +86,12 @@ class MeasureTestCase(unittest.TestCase):
         ds = detection.DetectionSetD(self.ms, detection.Threshold(10), "DETECTED")
 
         if display:
-            import lsst.fw.Display.ds9 as ds9
+            import lsst.afw.Display.ds9 as ds9
             ds9.mtv(self.ms, frame=0)
 
         objects = ds.getFootprints()
         measure = detection.MeasureD(self.ms, "DETECTED")
-        diaptr = fwCat.DiaSourcePtr()
+        diaptr = afwCat.DiaSourcePtr()
 
         for i in range(len(objects)):
             diaptr.setId(i)

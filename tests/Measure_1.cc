@@ -1,33 +1,33 @@
 // -*- lsst-c++ -*-
 #include <iostream>
 #include <lsst/detection/Measure.h>
-#include <lsst/mwi/utils/Trace.h>
-#include <lsst/fw/Exposure.h>
-#include "lsst/mwi/persistence/BoostStorage.h"
-#include "lsst/mwi/persistence/DbStorage.h"
-#include "lsst/mwi/persistence/DbTsvStorage.h"
-#include "lsst/mwi/persistence/Formatter.h"
-#include "lsst/mwi/persistence/LogicalLocation.h"
-#include "lsst/mwi/persistence/Persistence.h"
+#include <lsst/pex/logging/Trace.h>
+#include <lsst/afw/Exposure.h>
+#include "lsst/daf/persistence/BoostStorage.h"
+#include "lsst/daf/persistence/DbStorage.h"
+#include "lsst/daf/persistence/DbTsvStorage.h"
+#include "lsst/daf/persistence/Formatter.h"
+#include "lsst/daf/persistence/LogicalLocation.h"
+#include "lsst/daf/persistence/Persistence.h"
 
-using namespace lsst::fw;
+using namespace lsst::afw;
 using namespace lsst::detection;
-using namespace lsst::mwi::persistence;
-namespace mwie = lsst::mwi::exceptions;
+using namespace lsst::daf::persistence;
+namespace pexe = lsst::daf::exceptions;
 
 typedef float ImagePixelT;
 typedef unsigned int MaskPixelT;
 
 int main(int argc, char**argv) {
 
-    lsst::mwi::utils::Trace::setDestination(std::cout);
-    lsst::mwi::utils::Trace::setVerbosity(".", 1);
+    lsst::pex::logging::Trace::setDestination(std::cout);
+    lsst::pex::logging::Trace::setVerbosity(".", 1);
     
     Exposure<ImagePixelT, maskPixelType> inpExposure;
 
     try {
 	 inpExposure.readFits(argv[1]);
-    } catch (mwie::ExceptionStack &e) {
+    } catch (pexe::ExceptionStack &e) {
 	 std::cerr << "Error processing Exposure " << argv[1] << ": " << std::endl << e.what() << std::endl;
 	 exit(1);
     }
@@ -59,7 +59,7 @@ int main(int argc, char**argv) {
     try {
 	 outName = outName + "_OP";
 	 img.writeFits(outName);
-    } catch (mwie::ExceptionStack &e) {
+    } catch (pexe::ExceptionStack &e) {
 	 std::cerr << "Failed to write " << outName << ": " << e.what() << std::endl;
 	 exit(1);
     }
@@ -72,10 +72,10 @@ int main(int argc, char**argv) {
     Measure<ImagePixelT, maskPixelType> mimg(img, "FP");
 
     std::vector<Footprint::PtrType>& fpVec = ds.getFootprints();
-    lsst::fw::DiaSourceVector outputDiaSources;
+    lsst::afw::DiaSourceVector outputDiaSources;
 
     for (unsigned int i=0; i<fpVec.size(); i++) {
-	 DiaSource::Ptr diaPtr(new lsst::fw::DiaSource);
+	 DiaSource::Ptr diaPtr(new lsst::afw::DiaSource);
 	 diaPtr->setId(i); // will need to include Exposure id here!
 	 mimg.measureSource(diaPtr, *fpVec[i], 0);
 	 // use imgWCS to put ra and dec into DiaSource
@@ -91,7 +91,7 @@ int main(int argc, char**argv) {
     // Now, try persisting the DiaSourceVector
 
     // Define a blank Policy.
-    lsst::mwi::policy::Policy::Ptr policy(new lsst::mwi::policy::Policy);
+    lsst::pex::policy::Policy::Ptr policy(new lsst::pex::policy::Policy);
 
     // Get a unique id for this test.
     struct timeval tv;
@@ -102,9 +102,9 @@ int main(int argc, char**argv) {
     os << testId;
     std::string testIdString = os.str();
 
-    lsst::mwi::data::DataProperty::PtrType additionalData = lsst::mwi::data::SupportFactory::createPropertyNode("info");
-    lsst::mwi::data::DataProperty::PtrType child1(new lsst::mwi::data::DataProperty("visitId", testId));
-    lsst::mwi::data::DataProperty::PtrType child2(new lsst::mwi::data::DataProperty("sliceId", 0));
+    lsst::daf::base::DataProperty::PtrType additionalData = lsst::daf::base::DataProperty::createPropertyNode("info");
+    lsst::daf::base::DataProperty::PtrType child1(new lsst::daf::base::DataProperty("visitId", testId));
+    lsst::daf::base::DataProperty::PtrType child2(new lsst::daf::base::DataProperty("sliceId", 0));
     additionalData->addProperty(child1);
     additionalData->addProperty(child2);
 

@@ -4,10 +4,10 @@
 // Interpolate over defects in a MaskedImage
 //
 #include <vector>
-#include <lsst/fw/MaskedImage.h>
+#include <lsst/afw/MaskedImage.h>
 #include "lsst/detection/PSF.h"
 
-namespace lsst { namespace fw { namespace interp {
+namespace lsst { namespace afw { namespace interp {
     /**
      * LPC coefficients for sigma = 1, S/N = infty
      */
@@ -25,7 +25,7 @@ namespace lsst { namespace fw { namespace interp {
     double const min_2Gaussian_bias = -0.5641895835;	///< The mean value of the minimum of two N(0,1) variates
     
     template <typename ImageT, typename MaskT>
-    ImageT singlePixel(int x, int y, lsst::fw::MaskedImage<ImageT, MaskT> const & image,
+    ImageT singlePixel(int x, int y, lsst::afw::MaskedImage<ImageT, MaskT> const & image,
                        bool horizontal, ImageT minval);
 }}}
 
@@ -85,7 +85,7 @@ private:
 class PSF;
     
 template <typename ImageT, typename MaskT>
-void interpolateOverDefects(lsst::fw::MaskedImage<ImageT, MaskT> &image,
+void interpolateOverDefects(lsst::afw::MaskedImage<ImageT, MaskT> &image,
                             PSF const &psf,
                             std::vector<Defect::PtrT> &badList
                            );

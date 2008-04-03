@@ -1,12 +1,19 @@
 # -*- python -*-
 Import('env')
 
-env.SharedLibrary(env['eups_product'], map(lambda str: "../src/" + str,
-                                           ["CR.cc",
-                                            "DetectionSet.cc",
-                                            "Footprint.cc",
-                                            "Interp.cc",
-                                            "Peak.cc",
-                                            "PSF.cc",
-                                            ]), LIBS=env.getlibs("mwi fw boost wcslib vw"))
+sourceFiles = ["../src/" + fn for fn in os.listdir("../src/") if fn.endswith(".cc")]
+lsstLibs = "daf_base daf_data daf_persistence pex_exceptions pex_logging pex_policy security afw".split()
+env.SharedLibrary(
+   'detection',
+    sourceFiles,
+    LIBS=env.getlibs("boost wcslib vw") + lsstLibs,
+)
+#env.SharedLibrary(env['eups_product'], map(lambda str: "../src/" + str,
+#                                           ["CR.cc",
+#                                            "DetectionSet.cc",
+#                                            "Footprint.cc",
+#                                            "Interp.cc",
+#                                            "Peak.cc",
+#                                            "PSF.cc",
+#                                            ]), LIBS=env.getlibs("mwi fw boost wcslib vw"))
 

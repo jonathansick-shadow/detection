@@ -3,12 +3,12 @@ import os
 import sys
 import optparse
 
-import lsst.mwi.data as mwiData
-import lsst.mwi.policy
-import lsst.fw.Core.fwLib as fw
-import lsst.mwi.utils
-import lsst.fw.Core.fwLib as fw
-import lsst.fw.Core.fwCatalog as fwCat
+import lsst.daf.data as dafData
+import lsst.pex.policy
+import lsst.afw.Core.afwLib as afw
+import lsst.pex.logging
+import lsst.afw.Core.afwLib as afw
+import lsst.afw.Core.afwCatalog as afwCat
 import lsst.detection.detectionLib as det
 import Detection
 
@@ -46,18 +46,18 @@ def getArg(ind, defValue):
 diaPath = getArg(0, defDiaPath)
 policyPath = getArg(1, defPolicyPath)
 
-diaExposure = fw.ExposureF()
+diaExposure = afw.ExposureF()
 diaExposure.readFits(diaPath)
 diaMaskedImage = diaExposure.getMaskedImage()
 diaWCS = diaExposure.getWcs()
 
-policy = lsst.mwi.policy.Policy.createPolicy(policyPath)
+policy = lsst.pex.policy.Policy.createPolicy(policyPath)
 if options.debugIO:
     policy.set("debugIO", True)
 
 if options.verbosity > 0:
     print "Verbosity =", options.verbosity
-    lsst.mwi.utils.Trace_setVerbosity("lsst.detection", 9)
+    lsst.pex.logging.Trace_setVerbosity("lsst.detection", 9)
 
 diaSources = Detection.detection(diaExposure, policy, 0)
 

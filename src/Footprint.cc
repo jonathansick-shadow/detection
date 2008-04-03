@@ -6,15 +6,15 @@
 #include <string>
 #include <typeinfo>
 #include <boost/format.hpp>
-#include "lsst/mwi/utils/Trace.h"
-#include "lsst/mwi/exceptions.h"
-#include "lsst/fw/Mask.h"
-#include "lsst/fw/Kernel.h"
-#include "lsst/fw/KernelFunctions.h"
+#include "lsst/pex/logging/Trace.h"
+#include "lsst/pex/exceptions.h"
+#include "lsst/afw/Mask.h"
+#include "lsst/afw/Kernel.h"
+#include "lsst/afw/KernelFunctions.h"
 #include "lsst/detection/Peak.h"
 #include "lsst/detection/Footprint.h"
 
-using namespace lsst::fw;
+using namespace lsst::afw;
 using namespace lsst::detection;
 
 /************************************************************************************************************/
@@ -59,11 +59,11 @@ int Footprint::id = 0;                  //!< Counter for Footprint IDs
 /**
  * Create a Footprint
  *
- * \throws lsst::mwi::exceptions::InvalidParameter in nspan is < 0
+ * \throws lsst::pex::exceptions::InvalidParameter in nspan is < 0
  */
 Footprint::Footprint(int nspan,         //!< initial number of spans in this Footprint
                      const vw::BBox2i region) //!< Bounding box of MaskedImage footprint lives in
-    : lsst::mwi::data::LsstBase(typeid(this)),
+    : lsst::daf::data::LsstBase(typeid(this)),
       _fid(++id),
       _npix(0),
       _spans(*new Footprint::SpanListT),
@@ -72,7 +72,7 @@ Footprint::Footprint(int nspan,         //!< initial number of spans in this Foo
       _region(region),
       _normalized(false) {
     if (nspan < 0) {
-        throw lsst::mwi::exceptions::InvalidParameter(boost::format("Number of spans requested is -ve: %d") % nspan);
+        throw lsst::pex::exceptions::InvalidParameter(boost::format("Number of spans requested is -ve: %d") % nspan);
     }
     _npix = 0;
 }
@@ -82,7 +82,7 @@ Footprint::Footprint(int nspan,         //!< initial number of spans in this Foo
  */
 Footprint::Footprint(const vw::BBox2i& bbox, //!< The bounding box defining the rectangle
                      const vw::BBox2i region) //!< Bounding box of MaskedImage footprint lives in
-    : lsst::mwi::data::LsstBase(typeid(this)),
+    : lsst::daf::data::LsstBase(typeid(this)),
       _fid(++id),
       _npix(0),
       _spans(*new Footprint::SpanListT),
@@ -105,7 +105,7 @@ Footprint::Footprint(const vw::BBox2i& bbox, //!< The bounding box defining the 
  */
 Footprint::Footprint(const BCircle2i& circle, //!< The center and radius of the circle
                      const vw::BBox2i region) //!< Bounding box of MaskedImage footprint lives in
-    : lsst::mwi::data::LsstBase(typeid(this)),
+    : lsst::daf::data::LsstBase(typeid(this)),
       _fid(++id),
       _npix(0),
       _spans(*new Footprint::SpanListT),
@@ -246,7 +246,7 @@ int Footprint::setNpix() {
 void Footprint::rectangle(const vw::BBox2i& bbox //!< The desired bounding box
                          ) {
     if (_spans.size() > 0) {
-        throw lsst::mwi::exceptions::InvalidParameter(boost::format("Footprint already has %d spans") %
+        throw lsst::pex::exceptions::InvalidParameter(boost::format("Footprint already has %d spans") %
                                                       _spans.size());
     }
 
@@ -265,7 +265,7 @@ void Footprint::rectangle(const vw::BBox2i& bbox //!< The desired bounding box
 /**
  * Set the pixels in idImage which are in this to the specified value
  */
-void Footprint::insertIntoImage(lsst::fw::Image<boost::uint16_t>& idImage, //!< Image to contain the footprint
+void Footprint::insertIntoImage(lsst::afw::Image<boost::uint16_t>& idImage, //!< Image to contain the footprint
                                 const int id) const { //!< Set image to this value
     const unsigned int ncols = _region.width();
     const unsigned int nrows = _region.height();
@@ -273,12 +273,12 @@ void Footprint::insertIntoImage(lsst::fw::Image<boost::uint16_t>& idImage, //!< 
     const int row0 = _region.min().y();
 
     if (ncols != idImage.getCols() || nrows != idImage.getRows()) {
-        throw lsst::mwi::exceptions::InvalidParameter(boost::format("Image of size (%dx%d) doesn't match "
+        throw lsst::pex::exceptions::InvalidParameter(boost::format("Image of size (%dx%d) doesn't match "
                                                        "Footprint's host Image of size (%dx%d)")
                                          % idImage.getCols() % idImage.getRows() % ncols % nrows);
     }
 
-    typedef lsst::fw::Image<boost::uint16_t>::pixel_accessor pixAccessT;
+    typedef lsst::afw::Image<boost::uint16_t>::pixel_accessor pixAccessT;
 
     for (Footprint::const_span_iterator spi = _spans.begin(); spi != _spans.end(); spi++) {
         const Span::PtrType span = *spi;
@@ -304,7 +304,7 @@ void Footprint::insertIntoImage(lsst::fw::Image<boost::uint16_t>& idImage, //!< 
 template<typename MaskT>
 Footprint::PtrType lsst::detection::footprintAndMask(
 	Footprint::PtrType const & foot,         ///< The initial Footprint
-        typename lsst::fw::Mask<MaskT>::MaskPtrT const & mask, ///< The mask to & with foot
+        typename lsst::afw::Mask<MaskT>::MaskPtrT const & mask, ///< The mask to & with foot
         MaskT bitMask                   ///< Only consider these bits
                                                   ) {
     Footprint::PtrType out(new Footprint());
@@ -320,11 +320,11 @@ Footprint::PtrType lsst::detection::footprintAndMask(
  */
 template<typename MaskT>
 MaskT lsst::detection::setMaskFromFootprint(
-	typename lsst::fw::Mask<MaskT>::MaskPtrT mask, ///< Mask to set
+	typename lsst::afw::Mask<MaskT>::MaskPtrT mask, ///< Mask to set
         Footprint::PtrType const foot,  ///< Footprint specifying desired pixels
         MaskT const bitmask) { ///< Bitmask to OR into mask
 
-    typedef typename lsst::fw::Image<MaskT>::pixel_accessor ImagePixAccessT;
+    typedef typename lsst::afw::Image<MaskT>::pixel_accessor ImagePixAccessT;
 
     int const ncol = static_cast<int>(mask->getCols());
     int const nrow = static_cast<int>(mask->getRows());    
@@ -359,7 +359,7 @@ MaskT lsst::detection::setMaskFromFootprint(
  */
 template<typename MaskT>
 MaskT lsst::detection::setMaskFromFootprintList(
-	typename lsst::fw::Mask<MaskT>::MaskPtrT mask, ///< Mask to set
+	typename lsst::afw::Mask<MaskT>::MaskPtrT mask, ///< Mask to set
         std::vector<Footprint::PtrType> const& footprints, ///< Footprints specifying desired pixels
         MaskT const bitmask             ///< Bitmask to OR into mask
                                                ) {
@@ -377,12 +377,12 @@ MaskT lsst::detection::setMaskFromFootprintList(
  */
 template <typename IDPixelT>
 static void
-set_footprint_id(lsst::fw::Image<IDPixelT> *idImage,	// the image to set
+set_footprint_id(lsst::afw::Image<IDPixelT> *idImage,	// the image to set
                  Footprint::PtrType foot, // the footprint to insert
 		 const int id,          // the desired ID
                  int dx = 0, int dy = 0 // Add these to all x/y in the Footprint
                 ) {
-    typedef typename lsst::fw::Image<IDPixelT>::pixel_accessor ImagePixAccessT;
+    typedef typename lsst::afw::Image<IDPixelT>::pixel_accessor ImagePixAccessT;
     
     for (Footprint::const_span_iterator siter = foot->getSpans().begin();
          siter != foot->getSpans().end(); siter++) {
@@ -396,7 +396,7 @@ set_footprint_id(lsst::fw::Image<IDPixelT> *idImage,	// the image to set
 
 template <typename IDPixelT>
 static void
-set_footprint_array_ids(lsst::fw::Image<IDPixelT> *idImage, // the image to set
+set_footprint_array_ids(lsst::afw::Image<IDPixelT> *idImage, // the image to set
                         const std::vector<Footprint::PtrType>& footprints, // the footprints to insert
 			const bool relativeIDs) { // show IDs starting at 0, not Footprint->id
     int id = 0;				// first index will be 1
@@ -415,7 +415,7 @@ set_footprint_array_ids(lsst::fw::Image<IDPixelT> *idImage, // the image to set
     }
 }
 
-template static void set_footprint_array_ids<int>(lsst::fw::Image<int> *idImage,
+template static void set_footprint_array_ids<int>(lsst::afw::Image<int> *idImage,
                                                   const std::vector<Footprint::PtrType>& footprints,
                                                   const bool relativeIDs);
 
@@ -424,15 +424,15 @@ template static void set_footprint_array_ids<int>(lsst::fw::Image<int> *idImage,
  * Create an image from a Footprint's bounding box
  */
 template <typename IDImageT>
-static lsst::fw::Image<IDImageT> *makeImageFromBBox(const vw::BBox2i bbox) {
+static lsst::afw::Image<IDImageT> *makeImageFromBBox(const vw::BBox2i bbox) {
     const int numCols = bbox.max().x() - bbox.min().x() + 1;
     const int numRows = bbox.max().y() - bbox.min().y() + 1;
     if (numCols < 0 || numRows < 0) {
-        throw lsst::mwi::exceptions::InvalidParameter(boost::format("Size of BBox is %dx%d") %
+        throw lsst::pex::exceptions::InvalidParameter(boost::format("Size of BBox is %dx%d") %
                                                       numCols % numRows);
     }
     
-    lsst::fw::Image<IDImageT> *idImage = new lsst::fw::Image<IDImageT>(numCols, numRows);
+    lsst::afw::Image<IDImageT> *idImage = new lsst::afw::Image<IDImageT>(numCols, numRows);
 #if 0                                   // We need this!
     const int col0 = bbox.min().x();
     const int row0 = bbox.min().y();
@@ -448,17 +448,17 @@ static lsst::fw::Image<IDImageT> *makeImageFromBBox(const vw::BBox2i bbox) {
  * Set an image to the value of footprint's ID wherever they may fall
  */
 template <typename IDImageT>
-lsst::fw::Image<IDImageT> *setFootprintArrayIDs(
+lsst::afw::Image<IDImageT> *setFootprintArrayIDs(
 	const std::vector<Footprint::PtrType>& footprints, // the footprints to insert
         const bool relativeIDs          // show IDs starting at 1, not pmFootprint->id
                                                ) {
     std::vector<Footprint::PtrType>::const_iterator fiter = footprints.begin();
     if (fiter == footprints.end()) {
-        throw lsst::mwi::exceptions::InvalidParameter("You didn't provide any footprints");
+        throw lsst::pex::exceptions::InvalidParameter("You didn't provide any footprints");
     }
     const Footprint::PtrType foot = *fiter;
 
-    lsst::fw::Image<IDImageT> *idImage = makeImageFromBBox<IDImageT>(foot->getBBox());
+    lsst::afw::Image<IDImageT> *idImage = makeImageFromBBox<IDImageT>(foot->getBBox());
     *idImage *= 0;                      // should just SET image XXX
     /*
      * do the work
@@ -468,16 +468,16 @@ lsst::fw::Image<IDImageT> *setFootprintArrayIDs(
     return idImage;
 }
 
-template lsst::fw::Image<int> *setFootprintArrayIDs(const std::vector<Footprint::PtrType>& footprints,
+template lsst::afw::Image<int> *setFootprintArrayIDs(const std::vector<Footprint::PtrType>& footprints,
                                           const bool relativeIDs);
 /*
  * Set an image to the value of Footprint's ID wherever it may fall
  */
 template <typename IDImageT>
-lsst::fw::Image<IDImageT> *setFootprintID(const Footprint::PtrType& foot, // the Footprint to insert
+lsst::afw::Image<IDImageT> *setFootprintID(const Footprint::PtrType& foot, // the Footprint to insert
                                           const int id // the desired ID
                                          ) {
-    lsst::fw::Image<IDImageT> *idImage = makeImageFromBBox<IDImageT>(foot->getBBox());
+    lsst::afw::Image<IDImageT> *idImage = makeImageFromBBox<IDImageT>(foot->getBBox());
     *idImage *= 0;                      // should just SET image XXX
     /*
      * do the work
@@ -487,7 +487,7 @@ lsst::fw::Image<IDImageT> *setFootprintID(const Footprint::PtrType& foot, // the
     return idImage;
 }
 
-template lsst::fw::Image<int> *setFootprintID(const Footprint::PtrType& foot, const int id);
+template lsst::afw::Image<int> *setFootprintID(const Footprint::PtrType& foot, const int id);
 
 /************************************************************************************************************/
 /*
@@ -507,7 +507,7 @@ Footprint::PtrType lsst::detection::growFootprint(
     vw::BBox2i bbox = foot->getBBox();
     bbox.grow(vw::Vector2i(bbox.min().x() - 2*ngrow - 1, bbox.min().y() - 2*ngrow - 1));
     bbox.grow(vw::Vector2i(bbox.max().x() + 2*ngrow + 1, bbox.max().y() + 2*ngrow + 1));
-    lsst::fw::Image<int>::ImagePtrT idImage(makeImageFromBBox<int>(bbox));
+    lsst::afw::Image<int>::ImagePtrT idImage(makeImageFromBBox<int>(bbox));
 
     set_footprint_id(idImage.get(), foot, 1, -bbox.min().x(), -bbox.min().y());
 
@@ -527,10 +527,10 @@ Footprint::PtrType lsst::detection::growFootprint(
     //
     boost::shared_ptr<Mask<maskPixelType> >
         idMask(new Mask<maskPixelType>(idImage->getCols(), idImage->getRows()));
-    lsst::fw::MaskedImage<int, maskPixelType>::MaskedImagePtrT
+    lsst::afw::MaskedImage<int, maskPixelType>::MaskedImagePtrT
         midImage(new MaskedImage<int, maskPixelType>(idImage, idMask));
     // Here's the actual grow step
-    lsst::fw::MaskedImage<int, maskPixelType> convolvedImage = kernel::convolve(*midImage, *circle, 0, false);
+    lsst::afw::MaskedImage<int, maskPixelType> convolvedImage = kernel::convolve(*midImage, *circle, 0, false);
 
     DetectionSet<int, maskPixelType>::PtrType
         grownList(new DetectionSet<int, maskPixelType>(convolvedImage, 0.5, "", 1));
@@ -893,10 +893,10 @@ psArray *pmFootprintArrayToPeaks(const psArray *footprints) {
 //
 template
 Footprint::PtrType lsst::detection::footprintAndMask(Footprint::PtrType const & foot,
-                                                     lsst::fw::Mask<maskPixelType>::MaskPtrT const & mask,
+                                                     lsst::afw::Mask<maskPixelType>::MaskPtrT const & mask,
                                                      maskPixelType bitMask);
         
 template
-maskPixelType lsst::detection::setMaskFromFootprintList(lsst::fw::Mask<maskPixelType>::MaskPtrT mask,
+maskPixelType lsst::detection::setMaskFromFootprintList(lsst::afw::Mask<maskPixelType>::MaskPtrT mask,
                                                         std::vector<Footprint::PtrType> const& footprints,
                                                         maskPixelType const bitmask);
