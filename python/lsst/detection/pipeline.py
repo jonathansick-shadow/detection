@@ -1,4 +1,4 @@
-import lsst.dps.Stage
+import lsst.pex.harness.Stage
 import lsst.afw.Core.afwLib as afw
 import lsst.daf.persistence as dafper
 import lsst.pex.logging as logging
@@ -9,10 +9,10 @@ import Detection
 
 __all__ = ["DetectionStage"]
 
-class DetectionStage(lsst.dps.Stage.Stage):
+class DetectionStage(lsst.pex.harness.Stage.Stage):
     def __init__(self, stageId = -1, policy = None):
 
-        lsst.dps.Stage.Stage.__init__(self, stageId, policy)
+        lsst.pex.harness.Stage.Stage.__init__(self, stageId, policy)
         self.detectionLog = Log(Log.getDefaultLog(), "detection.stage")
 
     def process(self):

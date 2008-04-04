@@ -12,8 +12,8 @@ import pdb                              # we may want to say pdb.set_trace()
 import unittest
 import lsst.daf.tests as tests
 import lsst.pex.logging as logging
-import lsst.fw.Core.fwLib as fw
-import lsst.fw.Display.ds9 as ds9
+import lsst.afw.Core.afwLib as afw
+import lsst.afw.Display.ds9 as ds9
 import lsst.detection.detectionLib as detection
 
 try:
@@ -91,8 +91,8 @@ class FootprintTestCase(unittest.TestCase):
 
     def testFootprintFromBBox(self):
         """Create a rectangular Footprint"""
-        foot = detection.Footprint(fw.BBox2i(9, 10, 7, 4),
-                                   fw.BBox2i(0, 0, 30, 20))
+        foot = detection.Footprint(afw.BBox2i(9, 10, 7, 4),
+                                   afw.BBox2i(0, 0, 30, 20))
 
         bbox = foot.getBBox()
 
@@ -103,7 +103,7 @@ class FootprintTestCase(unittest.TestCase):
         self.assertEqual(bbox.max().x(), 16) # i.e. one past
         self.assertEqual(bbox.max().y(), 14) #              the last point
 
-        idImage = fw.ImageU(foot.getRegion().width(), foot.getRegion().height())
+        idImage = afw.ImageU(foot.getRegion().width(), foot.getRegion().height())
         idImage.set(0)
         
         foot.insertIntoImage(idImage, foot.getId())
@@ -129,9 +129,9 @@ class FootprintTestCase(unittest.TestCase):
         """Create a circular Footprint"""
 
         foot = detection.Footprint(detection.BCircle2i(9, 15, 6),
-                                   fw.BBox2i(0, 0, 20, 30))
+                                   afw.BBox2i(0, 0, 20, 30))
 
-        idImage = fw.ImageU(foot.getRegion().width(), foot.getRegion().height())
+        idImage = afw.ImageU(foot.getRegion().width(), foot.getRegion().height())
         idImage.set(0)
         
         foot.insertIntoImage(idImage, foot.getId())
@@ -163,7 +163,7 @@ class DetectionSetTestCase(unittest.TestCase):
             return True
     
     def setUp(self):
-        self.ms = fw.MaskedImageD(12, 8)
+        self.ms = afw.MaskedImageD(12, 8)
         im = self.ms.getImage()
         #
         # Objects that we should detect
@@ -186,7 +186,7 @@ class DetectionSetTestCase(unittest.TestCase):
     def testGC(self):
         """Check that DetectionSets are automatically garbage collected (when MemoryTestCase runs)"""
         
-        ms = fw.MaskedImageD(10, 20)
+        ms = afw.MaskedImageD(10, 20)
         ds = detection.DetectionSetD(ms, detection.Threshold(10))
 
     def testFootprints(self):
@@ -217,7 +217,7 @@ class DetectionSetTestCase(unittest.TestCase):
         ds = detection.DetectionSetD(self.ms, detection.Threshold(10))
         objects = ds.getFootprints()
 
-        idImage = fw.ImageU(self.ms.getImage().getCols(), self.ms.getImage().getRows())
+        idImage = afw.ImageU(self.ms.getImage().getCols(), self.ms.getImage().getRows())
         idImage.set(0)
         
         for foot in objects:

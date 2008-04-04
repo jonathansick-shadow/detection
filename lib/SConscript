@@ -15,5 +15,5 @@ env.SharedLibrary(
 #                                            "Interp.cc",
 #                                            "Peak.cc",
 #                                            "PSF.cc",
-#                                            ]), LIBS=env.getlibs("mwi fw boost wcslib vw"))
+#                                            ]), LIBS=env.getlibs("daf_base daf_data daf_persistence fw boost wcslib vw"))
 
