@@ -14,11 +14,11 @@ import os
 from math import *
 import unittest
 import eups
-import lsst.daf.tests as tests
+import lsst.utils.tests as tests
 import lsst.pex.logging as logging
 import lsst.pex.policy as policy
-import lsst.afw.Core.afwLib as afw
-import lsst.afw.Display.ds9 as ds9
+import lsst.afw.image.imageLib as imageLib
+import lsst.afw.display.ds9 as ds9
 import lsst.detection.detectionLib as detection
 import lsst.detection.defects as defects
 
@@ -34,14 +34,14 @@ except NameError:
     display = False
 
     if display:
-        import lsst.afw.Display.ds9 as ds9
+        import lsst.afw.display.ds9 as ds9
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 class CosmicRayTestCase(unittest.TestCase):
     """A test case for Cosmic Ray detection"""
     def setUp(self):
-        self.mi = afw.MaskedImageD()
+        self.mi = imageLib.MaskedImageD()
         self.FWHM = 5                   # pixels
         self.psf = detection.dgPSF(self.FWHM/(2*sqrt(2*log(2))))
         if eups.productDir("afwdata"):
@@ -74,7 +74,7 @@ class CosmicRayTestCase(unittest.TestCase):
         badPixels = defects.policyToBadRegionList(os.path.join(os.environ["DETECTION_DIR"], "pipeline/BadPixels.paf"))
         detection.interpolateOverDefects(self.mi, self.psf, badPixels)
 
-        background = afw.mean_channel_value(self.mi.getImage())
+        background = imageLib.mean_channel_value(self.mi.getImage())
         crs = detection.findCosmicRays(self.mi, self.psf, background, self.policy)
 
         if display:

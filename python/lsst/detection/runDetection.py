@@ -5,10 +5,9 @@ import optparse
 
 import lsst.daf.data as dafData
 import lsst.pex.policy
-import lsst.afw.Core.afwLib as afw
 import lsst.pex.logging
-import lsst.afw.Core.afwLib as afw
-import lsst.afw.Core.afwCatalog as afwCat
+import lsst.afw.image as afwImage
+import lsst.afw.detection as afwDet
 import lsst.detection.detectionLib as det
 import Detection
 
@@ -18,7 +17,7 @@ appDir = os.path.normpath(os.path.join("../../../",moduleDir))
 
 #defDiaPath = os.path.join(defInDir, "871034p_1_MI")
 defDiaPath = "/home/tsa/DC2OutputData/704893p_01_diff"
-defPolicyPath = "/home/tsa/DC2/detection/trunk/pipeline/examples/DetectionPipeline/policy/DetectionStagePolicy.paf"
+defPolicyPath = "/home/tsa/DMS/detection/trunk/pipeline/examples/DetectionPipeline/policy/DetectionStagePolicy.paf"
 defVerbosity = 5 # change to 0 once this all works to hide all messages
 
 usage = """usage: %%prog [options] [diaImage [policyFile]]]
@@ -46,7 +45,7 @@ def getArg(ind, defValue):
 diaPath = getArg(0, defDiaPath)
 policyPath = getArg(1, defPolicyPath)
 
-diaExposure = afw.ExposureF()
+diaExposure = afwImage.ExposureF()
 diaExposure.readFits(diaPath)
 diaMaskedImage = diaExposure.getMaskedImage()
 diaWCS = diaExposure.getWcs()

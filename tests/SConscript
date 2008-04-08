@@ -1,7 +1,7 @@
 # -*- python -*-
 Import("env")
 
-env.Program(["Footprint_1.cc"], LIBS=env.getlibs("detection"))
+env.Program(["Footprint_1.cc"], LIBS=env.getlibs("pex_logging detection"))
 env.Program(["Measure_1.cc"], LIBS=env.getlibs("afw daf_base daf_data daf_persistence pex_logging vw detection"))
 env.Program(["BBox_1.cc"], LIBS=env.getlibs("afw vw"))
 #
@@ -22,5 +22,7 @@ except:
                                ignoreList=["Measure_1", "BBox_1"])
 
 tests.run("*.cc")
+
+env.CheckSwig("python", ilang="c++",includedProducts="utils pex_logging")
 for target in tests.run("*.py"):
     env.Depends(target, "../python/lsst/detection/_detectionLib%s" % (env['LDMODULESUFFIX']))

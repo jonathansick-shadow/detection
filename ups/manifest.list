@@ -1,6 +1,5 @@
 >merge: daf_base
 >merge: daf_persistence
 >merge: pex_logging
->merge: ctrl_harness
 >merge: afw
 >self

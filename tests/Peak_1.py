@@ -10,9 +10,9 @@ or
 
 import pdb                              # we may want to say pdb.set_trace()
 import unittest
-import lsst.daf.tests as tests
+import lsst.utils.tests as tests
 import lsst.pex.logging as logging
-import lsst.afw.Core.afwLib as afw
+import lsst.afw.image.imageLib as imageLib
 import lsst.detection.detectionLib as detection
 
 try:

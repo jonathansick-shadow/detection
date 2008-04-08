@@ -7,10 +7,10 @@
 #include <cmath>
 #include <boost/cstdint.hpp>
 #include <boost/shared_ptr.hpp>
-#include <lsst/afw/MaskedImage.h>
-#include <lsst/afw/ImageUtils.h>
+#include <lsst/afw/image/MaskedImage.h>
+#include <lsst/afw/image/ImageUtils.h>
 #include <lsst/detection/Footprint.h>
-#include <lsst/afw/DiaSource.h>
+#include <lsst/afw/detection/Source.h>
 
 namespace lsst { namespace detection {
 
@@ -22,17 +22,17 @@ namespace lsst { namespace detection {
 /* Define the PixelProcessingFunc that will be used for the measurement */
 
 template <typename ImagePixelT, typename MaskPixelT> 
-class MeasurePixProcFunc : public lsst::afw::PixelProcessingFunc<ImagePixelT, MaskPixelT> {
+class MeasurePixProcFunc : public lsst::afw::image::PixelProcessingFunc<ImagePixelT, MaskPixelT> {
 public:
-    typedef typename PixelChannelType<ImagePixelT>::type ImageChannelT;
-    typedef typename PixelChannelType<MaskPixelT>::type MaskChannelT;
-    typedef typename lsst::afw::PixelLocator<ImagePixelT> ImageIteratorT;
-    typedef typename lsst::afw::PixelLocator<MaskPixelT> MaskIteratorT;
+    typedef typename vw::PixelChannelType<ImagePixelT>::type ImageChannelT;
+    typedef typename vw::PixelChannelType<MaskPixelT>::type MaskChannelT;
+    typedef typename lsst::afw::image::PixelLocator<ImagePixelT> ImageIteratorT;
+    typedef typename lsst::afw::image::PixelLocator<MaskPixelT> MaskIteratorT;
     
-    MeasurePixProcFunc(lsst::afw::MaskedImage<ImagePixelT, MaskPixelT>& m, const std::string & footPrintPlaneName) : lsst::afw::PixelProcessingFunc<ImagePixelT, MaskPixelT>(m), _footPrintPlaneName(footPrintPlaneName) {}
+    MeasurePixProcFunc(lsst::afw::image::MaskedImage<ImagePixelT, MaskPixelT>& m, const std::string & footPrintPlaneName) : lsst::afw::image::PixelProcessingFunc<ImagePixelT, MaskPixelT>(m), _footPrintPlaneName(footPrintPlaneName) {}
     
     void init() {
-        lsst::afw::PixelProcessingFunc<ImagePixelT, MaskPixelT>::_maskPtr->getPlaneBitMask(_footPrintPlaneName, bitsFP);
+        lsst::afw::image::PixelProcessingFunc<ImagePixelT, MaskPixelT>::_maskPtr->getPlaneBitMask(_footPrintPlaneName, bitsFP);
        nPix = 0;
        flux = 0.0;
        xMoment = 0.0;
@@ -66,14 +66,14 @@ private:
 template<typename ImagePixelT, typename MaskPixelT>
 class Measure :  private lsst::daf::data::LsstBase {
 public:
-    Measure(lsst::afw::MaskedImage<ImagePixelT, MaskPixelT> &img, const std::string & footPrintPlaneName);
-    Measure(lsst::afw::MaskedImage<ImagePixelT, MaskPixelT> &img, const std::string & footPrintPlaneName,
-            lsst::afw::MaskPixelBooleanFunc<MaskPixelT> &selector);
-    void measureSource( lsst::afw::DiaSource::Ptr, const Footprint &fp, float background=0);
-    void measureSource( lsst::afw::DiaSource::Ptr, Footprint::PtrType fpPtr, float background=0);
+    Measure(lsst::afw::image::MaskedImage<ImagePixelT, MaskPixelT> &img, const std::string & footPrintPlaneName);
+    Measure(lsst::afw::image::MaskedImage<ImagePixelT, MaskPixelT> &img, const std::string & footPrintPlaneName,
+            lsst::afw::image::MaskPixelBooleanFunc<MaskPixelT> &selector);
+    void measureSource( lsst::afw::detection::Source::Ptr, const Footprint &fp, float background=0);
+    void measureSource( lsst::afw::detection::Source::Ptr, Footprint::PtrType fpPtr, float background=0);
 private:
-    lsst::afw::MaskedImage<ImagePixelT, MaskPixelT> _img;
-    lsst::afw::MaskPixelBooleanFunc<MaskPixelT> *_selector;
+    lsst::afw::image::MaskedImage<ImagePixelT, MaskPixelT> _img;
+    lsst::afw::image::MaskPixelBooleanFunc<MaskPixelT> *_selector;
     const std::string _footPrintPlaneName;
 };
 

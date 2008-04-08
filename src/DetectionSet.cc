@@ -4,7 +4,7 @@
 #include <typeinfo>
 #include <boost/format.hpp>
 #include <lsst/daf/base/DataProperty.h>
-#include "lsst/afw/afwExceptions.h"
+#include "lsst/afw/image/ImageExceptions.h"
 #include "lsst/pex/exceptions.h"
 #include "lsst/pex/logging/Trace.h"
 
@@ -78,7 +78,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::~DetectionSet() {
  */
 template<typename ImagePixelType, typename MaskPixelType>
 DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
-	const lsst::afw::MaskedImage<ImagePixelType, MaskPixelType> &maskedImg, //!< MaskedImage to search for objects
+	const lsst::afw::image::MaskedImage<ImagePixelType, MaskPixelType> &maskedImg, //!< MaskedImage to search for objects
         const Threshold& threshold,     //!< threshold to find objects
         const std::string& planeName,   //!< mask plane to set (if != "")
         const int npixMin)              //!< minimum number of pixels in an object
@@ -91,7 +91,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
     int nobj = 0;			/* number of objects found */
     int x0 = 0;			        /* unpacked from a IdSpan */
 
-    const typename lsst::afw::Image<ImagePixelType>::ImagePtrT img = maskedImg.getImage();
+    const typename lsst::afw::image::Image<ImagePixelType>::ImagePtrT img = maskedImg.getImage();
     const int row0 = img->getOffsetRows();
     const int col0 = img->getOffsetCols();
     const int numRows = img->getRows();
@@ -128,7 +128,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
 /*
  * Go through image identifying objects
  */
-    typedef typename lsst::afw::Image<ImagePixelType>::pixel_accessor pixAccessT;
+    typedef typename lsst::afw::image::Image<ImagePixelType>::pixel_accessor pixAccessT;
     const float thresholdVal = threshold.getValue(thresholdParam);
     const bool polarity = threshold.getPolarity();
 
@@ -241,7 +241,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
     //
     // Define the maskPlane
     //
-    const typename lsst::afw::Mask<MaskPixelType>::MaskPtrT mask = maskedImg.getMask();
+    const typename lsst::afw::image::Mask<MaskPixelType>::MaskPtrT mask = maskedImg.getMask();
     mask->addMaskPlane(planeName);
 
     MaskPixelType bitPlane = -1;
@@ -249,7 +249,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
     //
     // Set the bits where objects are detected
     //
-    typedef typename lsst::afw::Mask<MaskPixelType>::pixel_accessor maskPixAccessT;
+    typedef typename lsst::afw::image::Mask<MaskPixelType>::pixel_accessor maskPixAccessT;
 
     for (std::vector<Footprint::PtrType>::const_iterator fiter = _footprints.begin(); fiter != _footprints.end(); fiter++) {
         const Footprint::PtrType foot = *fiter;
@@ -271,7 +271,7 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
  */
 template<typename ImagePixelType, typename MaskPixelType>
 DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
-	const lsst::afw::MaskedImage<ImagePixelType, MaskPixelType> &img, //!< Image to search for objects
+	const lsst::afw::image::MaskedImage<ImagePixelType, MaskPixelType> &img, //!< Image to search for objects
         const Threshold& threshold,          //!< threshold to find objects
         int x,                          //!< Footprint should include this pixel (column)
         int y,                          //!< Footprint should include this pixel (row) 
@@ -306,7 +306,7 @@ namespace {
     public:
         typedef std::vector<boost::shared_ptr<Startspan> > StartspanPtrT;
         
-        Startspan(const Span *span, lsst::afw::Mask<MaskPixelType> *mask, const DIRECTION dir);
+        Startspan(const Span *span, lsst::afw::image::Mask<MaskPixelType> *mask, const DIRECTION dir);
         ~Startspan() { delete _span; }
 
         bool getSpan() { return _span; }
@@ -323,7 +323,7 @@ namespace {
 
     template<typename MaskPixelType>
     Startspan<MaskPixelType>::Startspan(const Span *span, // The span in question
-                         lsst::afw::Mask<MaskPixelType> *mask, // Pixels that we've already detected
+                         lsst::afw::image::Mask<MaskPixelType> *mask, // Pixels that we've already detected
                          const DIRECTION dir // Should we continue searching towards the top of the image?
                         ) :
         _span(span),
@@ -346,7 +346,7 @@ namespace {
     template<typename ImagePixelType, typename MaskPixelType>
     class StartspanSet {
     public:
-        StartspanSet(lsst::afw::MaskedImage<ImagePixelType, MaskPixelType>& image) :
+        StartspanSet(lsst::afw::image::MaskedImage<ImagePixelType, MaskPixelType>& image) :
             _image(image->getImage()),
             _mask(image->getMask()),
             _spans(*new std::vector<typename Startspan<MaskPixelType>::StartspanPtrT>()) {}
@@ -357,8 +357,8 @@ namespace {
                      const Threshold& threshold,	// Threshold
                      const float param = -1);   // parameter that Threshold may need
     private:
-        const lsst::afw::Image<ImagePixelType> *_image; // the Image we're searching
-        lsst::afw::Mask<MaskPixelType> *_mask; // the mask that tells us where we've got to
+        const lsst::afw::image::Image<ImagePixelType> *_image; // the Image we're searching
+        lsst::afw::image::Mask<MaskPixelType> *_mask; // the mask that tells us where we've got to
         std::vector<typename Startspan<MaskPixelType>::StartspanPtrT>& _spans; // list of Startspans
     };
 
@@ -440,7 +440,7 @@ namespace {
         const int di = (dir == UP) ? 1 : -1; // how much i changes to get to the next row
         bool stop = false;			// should I stop searching for spans?
 
-        typedef typename lsst::afw::Image<ImagePixelType>::pixel_accessor pixAccessT;
+        typedef typename lsst::afw::image::Image<ImagePixelType>::pixel_accessor pixAccessT;
         const float thresholdVal = threshold.getValue(param);
 	const bool polarity = threshold.getPolarity();
         
@@ -711,11 +711,11 @@ DetectionSet<ImagePixelType, MaskPixelType>::DetectionSet(
  * Return an Image<boost::uint16_t> consisting of the Footprints in the DetectionSet
  */
 template<typename ImagePixelType, typename MaskPixelType>
-typename lsst::afw::Image<boost::uint16_t>::ImagePtrT DetectionSet<ImagePixelType, MaskPixelType>::insertIntoImage(const bool relativeIDs) {
+typename lsst::afw::image::Image<boost::uint16_t>::ImagePtrT DetectionSet<ImagePixelType, MaskPixelType>::insertIntoImage(const bool relativeIDs) {
     const unsigned int ncols = _region.width();
     const unsigned int nrows = _region.height();
 
-    typename lsst::afw::Image<boost::uint16_t>::ImagePtrT im(new lsst::afw::Image<boost::uint16_t>(ncols, nrows));
+    typename lsst::afw::image::Image<boost::uint16_t>::ImagePtrT im(new lsst::afw::image::Image<boost::uint16_t>(ncols, nrows));
 
     int id = 0;
     for (std::vector<Footprint::PtrType>::const_iterator fiter = _footprints.begin(); fiter != _footprints.end(); fiter++) {
@@ -737,6 +737,6 @@ typename lsst::afw::Image<boost::uint16_t>::ImagePtrT DetectionSet<ImagePixelTyp
 //
 // Implicit instantiations
 //
-template class DetectionSet<int, lsst::afw::maskPixelType>;
-template class DetectionSet<float, lsst::afw::maskPixelType>;
-template class DetectionSet<double, lsst::afw::maskPixelType>;
+template class DetectionSet<int, lsst::afw::image::maskPixelType>;
+template class DetectionSet<float, lsst::afw::image::maskPixelType>;
+template class DetectionSet<double, lsst::afw::image::maskPixelType>;

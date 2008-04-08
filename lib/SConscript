@@ -1,5 +1,6 @@
 # -*- python -*-
 Import('env')
+import os
 
 sourceFiles = ["../src/" + fn for fn in os.listdir("../src/") if fn.endswith(".cc")]
 lsstLibs = "daf_base daf_data daf_persistence pex_exceptions pex_logging pex_policy security afw".split()

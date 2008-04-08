@@ -2,7 +2,7 @@
 Import("env")
 import lsst.SConsUtils as scons
 
-env.CheckSwig("python", ilang="c++", includedProducts="daf_base daf_data pex_logging  afw")
+env.CheckSwig("python", ilang="c++", includedProducts="utils daf_base daf_data pex_logging  afw")
 
 env.LoadableModuleIncomplete("_detectionLib", Split("detectionLib.i"),
                              LIBS=env.getlibs("vw daf_base daf_data pex_logging afw detection"))

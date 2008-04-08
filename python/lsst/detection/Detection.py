@@ -8,8 +8,8 @@ import math
 import lsst.pex.logging as logging
 import lsst.daf.data as dafData
 import lsst.pex.policy
-import lsst.afw.Core.afwLib as afw
-import lsst.afw.Core.afwCatalog as afwCat
+import lsst.afw.image as imageLib
+import lsst.afw.detection as afwDet
 import lsst.detection.detectionLib as det
 
 from lsst.pex.logging import Log, ScreenLog
@@ -22,12 +22,12 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
     """Detect and measure objects in an incoming difference image Exposure
     
     Inputs:
-    - differenceImageExposure: an lsst.afw.Exposure containing a difference MaskedImage and WCS
+    - differenceImageExposure: an lsst.afw.image.Exposure containing a difference MaskedImage and WCS
     - policy: the policy; required elements are...?
     - footprintList: a sequence of detection footprints on which to force measurement
         
     Returns:
-    - an lsst.afw.DiaSourceVector
+    - an lsst.afw.detection.SourceVector
     """
 
     if not(useLog):
@@ -57,7 +57,7 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
     #
 
     varImg = img.getVariance()
-    noise = math.sqrt(afw.mean_channel_value(varImg))
+    noise = math.sqrt(imageLib.mean_channel_value(varImg))
 
     logging.Trace("lsst.detection.detection", 3,
         "thresholdSigma = %r; noise = %r PixMin = %r" % (thresh, noise, nPixMin))
@@ -105,17 +105,17 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
 
     imgWCS = differenceImageExposure.getWcs()
 
-    outputDiaSources = afwCat.DiaSourceVec()
+    outputDiaSources = afwDet.DiaSourceVec()
 
     imgMeasure = det.MeasureF(img, "FP+")
 
     id = 0
     for i in range(len(fpVecPositive)):
-        diaPtr = afwCat.DiaSourcePtr()
+        diaPtr = afwDet.DiaSourcePtr()
         diaPtr.setId(id)
         diaPtr.setFilterId(filterId);
         imgMeasure.measureSource(diaPtr, fpVecPositive[i], 0.0)   # NOTE explicit background of zero used for difference image
-        pixCoord = afw.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
+        pixCoord = imageLib.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
         skyCoord = imgWCS.colRowToRaDec(pixCoord)
         diaPtr.setRa(skyCoord.x())
         diaPtr.setDec(skyCoord.y())
@@ -125,11 +125,11 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
     imgMeasure = det.MeasureF(img, "FP-")
 
     for i in range(len(fpVecNegative)):
-        diaPtr = afwCat.DiaSourcePtr()
+        diaPtr = afwDet.DiaSourcePtr()
         diaPtr.setId(id)
         diaPtr.setFilterId(filterId);
         imgMeasure.measureSource(diaPtr, fpVecNegative[i], 0.0)   # NOTE explicit background of zero used for difference image
-        pixCoord = afw.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
+        pixCoord = imageLib.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
         skyCoord = imgWCS.colRowToRaDec(pixCoord)
         diaPtr.setRa(skyCoord.x())
         diaPtr.setDec(skyCoord.y())

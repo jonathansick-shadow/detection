@@ -1,8 +1,11 @@
 // -*- lsst-c++ -*-
 #include <iostream>
 #include <lsst/detection/Measure.h>
+#include <lsst/pex/exceptions/Exception.h>
 #include <lsst/pex/logging/Trace.h>
-#include <lsst/afw/Exposure.h>
+#include <lsst/afw/image/Exposure.h>
+#include <lsst/afw/image/Wcs.h>
+#include <lsst/afw/detection/Source.h>
 #include "lsst/daf/persistence/BoostStorage.h"
 #include "lsst/daf/persistence/DbStorage.h"
 #include "lsst/daf/persistence/DbTsvStorage.h"
@@ -10,10 +13,11 @@
 #include "lsst/daf/persistence/LogicalLocation.h"
 #include "lsst/daf/persistence/Persistence.h"
 
-using namespace lsst::afw;
+using namespace lsst::afw::detection;
+using namespace lsst::afw::image;
 using namespace lsst::detection;
 using namespace lsst::daf::persistence;
-namespace pexe = lsst::daf::exceptions;
+namespace pexe = lsst::pex::exceptions;
 
 typedef float ImagePixelT;
 typedef unsigned int MaskPixelT;
@@ -67,20 +71,20 @@ int main(int argc, char**argv) {
 
     // Now measure the footprints.  Background is explicitly zero, as expected for difference image
 
-    WCS imgWCS = inpExposure.getWcs();
+    Wcs imgWcs = inpExposure.getWcs();
 
     Measure<ImagePixelT, maskPixelType> mimg(img, "FP");
 
     std::vector<Footprint::PtrType>& fpVec = ds.getFootprints();
-    lsst::afw::DiaSourceVector outputDiaSources;
+    lsst::afw::detection::SourceVector outputDiaSources;
 
     for (unsigned int i=0; i<fpVec.size(); i++) {
-	 DiaSource::Ptr diaPtr(new lsst::afw::DiaSource);
+	 Source::Ptr diaPtr(new lsst::afw::detection::Source);
 	 diaPtr->setId(i); // will need to include Exposure id here!
 	 mimg.measureSource(diaPtr, *fpVec[i], 0);
-	 // use imgWCS to put ra and dec into DiaSource
+	 // use imgWcs to put ra and dec into DiaSource
 	 Coord2D pixCoord(diaPtr->getColc(), diaPtr->getRowc());
-	 Coord2D skyCoord = imgWCS.colRowToRaDec(pixCoord);
+	 Coord2D skyCoord = imgWcs.colRowToRaDec(pixCoord);
 	 diaPtr->setRa(skyCoord[0]);
 	 diaPtr->setDec(skyCoord[1]);
 	 std::cout << boost::format("DiaSource: %ld %lf %lf -> %lf %lf\n") % diaPtr->getId() 

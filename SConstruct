@@ -2,7 +2,7 @@
 #
 # Setup our environment
 #
-import glob, os.path
+import glob, os.path, re, os
 import lsst.SConsUtils as scons
 
 env = scons.makeEnv("detection",
@@ -16,13 +16,15 @@ env = scons.makeEnv("detection",
 		     ["cfitsio", "fitsio.h", "cfitsio", "ffopen"],
                      ["wcslib", "wcslib/wcs.h", "wcs"],
                      ["xpa", "xpa.h", "xpa", "XPAPuts"],
+                     ["utils", "lsst/utils/Utils.h", "utils:C++"],
                      ["daf_base", "lsst/daf/base/DataProperty.h", "daf_base:C++"],
-                     ["daf_data", "lsst/daf/data/LsstBase.h", "daf_data:C++"],
-                     ["daf_base", "lsst/daf/base/DataProperty.h", "daf_base:C++"],
-                     ["daf_persistence", "lsst/daf/persistence/Persistence.h", "daf_persistence:C++"],
+                     ["pex_policy", "lsst/pex/policy/Policy.h", "pex_policy:C++"],
                      ["pex_exceptions", "lsst/pex/exceptions.h", "pex_exceptions:C++"],
                      ["pex_logging", "lsst/pex/logging/Trace.h", "pex_logging:C++"],
-                     ["afw", "lsst/afw/MaskedImage.h", "fw"]
+                     ["security", "lsst/security/Security.h", "security:C++"],
+                     ["daf_persistence", "lsst/daf/persistence/Persistence.h", "daf_persistence:C++"],
+                     ["daf_data", "lsst/daf/data/LsstBase.h", "daf_data:C++"],
+                     ["afw", "lsst/afw/image/MaskedImage.h", "afw"]
                      ])
 
 env.libs["detection"] +=  env.getlibs("daf_base daf_data daf_persistence pex_logging afw boost wcslib")

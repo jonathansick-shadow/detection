@@ -7,7 +7,7 @@
 #include <cmath>
 #include <boost/cstdint.hpp>
 #include <boost/shared_ptr.hpp>
-#include <lsst/afw/MaskedImage.h>
+#include <lsst/afw/image/MaskedImage.h>
 #include <lsst/detection/Peak.h>
 #include "BCircle.h"
 
@@ -139,7 +139,7 @@ public:
 
     void rectangle(const vw::BBox2i& bbox);
 
-    void insertIntoImage(lsst::afw::Image<boost::uint16_t>& idImage, const int id) const;
+    void insertIntoImage(lsst::afw::image::Image<boost::uint16_t>& idImage, const int id) const;
 private:
     Footprint(const Footprint &);       //!< No copy constructor
     Footprint operator = (Footprint const &) const; //!< no assignment
@@ -157,16 +157,16 @@ private:
 Footprint::PtrType growFootprint(Footprint::PtrType const &foot, int ngrow);
 
 template<typename MaskT>
-MaskT setMaskFromFootprint(typename lsst::afw::Mask<MaskT>::MaskPtrT mask,
+MaskT setMaskFromFootprint(typename lsst::afw::image::Mask<MaskT>::MaskPtrT mask,
                            Footprint::PtrType const footprint,
                            MaskT const bitmask);
 template<typename MaskT>
-MaskT setMaskFromFootprintList(typename lsst::afw::Mask<MaskT>::MaskPtrT mask,
+MaskT setMaskFromFootprintList(typename lsst::afw::image::Mask<MaskT>::MaskPtrT mask,
                                std::vector<Footprint::PtrType> const& footprints,
                                MaskT const bitmask);
 template<typename MaskT>
 Footprint::PtrType footprintAndMask(Footprint::PtrType const & foot,
-                                    typename lsst::afw::Mask<MaskT>::MaskPtrT const & mask,
+                                    typename lsst::afw::image::Mask<MaskT>::MaskPtrT const & mask,
                                     MaskT bitmask);
     
 /************************************************************************************************************/
@@ -179,11 +179,11 @@ class DetectionSet : public lsst::daf::data::LsstBase {
 public:
     typedef boost::shared_ptr<DetectionSet> PtrType;
 
-    DetectionSet(const lsst::afw::MaskedImage<ImagePixelT, MaskPixelT> &img,
+    DetectionSet(const lsst::afw::image::MaskedImage<ImagePixelT, MaskPixelT> &img,
                  const Threshold& threshold,
                  const std::string& planeName = "",
                  const int npixMin = 1);
-    DetectionSet(const lsst::afw::MaskedImage<ImagePixelT, MaskPixelT> &img,
+    DetectionSet(const lsst::afw::image::MaskedImage<ImagePixelT, MaskPixelT> &img,
                  const Threshold& threshold,
                  int x,
                  int y,
@@ -197,9 +197,9 @@ public:
     const vw::BBox2i& getRegion() const { return _region; } //!< Return the corners of the MaskedImage
 
 #if 0                                   // these are equivalent, but the former confuses swig
-    typename lsst::afw::Image<boost::uint16_t>::ImagePtrT insertIntoImage(const bool relativeIDs);
+    typename lsst::afw::image::Image<boost::uint16_t>::ImagePtrT insertIntoImage(const bool relativeIDs);
 #else
-    typename boost::shared_ptr<lsst::afw::Image<boost::uint16_t> > insertIntoImage(const bool relativeIDs);
+    typename boost::shared_ptr<lsst::afw::image::Image<boost::uint16_t> > insertIntoImage(const bool relativeIDs);
 #endif
 private:
     std::vector<Footprint::PtrType>& _footprints;  //!< the Footprints of detected objects

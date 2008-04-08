@@ -4,7 +4,7 @@
 // Handle cosmic rays in a MaskedImage
 //
 #include <vector>
-#include <lsst/afw/MaskedImage.h>
+#include <lsst/afw/image/MaskedImage.h>
 #include "lsst/detection/PSF.h"
 #include "lsst/detection/Footprint.h"
 
@@ -14,7 +14,7 @@ namespace lsst { namespace detection {
 
 template <typename ImageT, typename MaskT>
 std::vector<lsst::detection::Footprint::PtrType>
-findCosmicRays(lsst::afw::MaskedImage<ImageT, MaskT> &image,
+findCosmicRays(lsst::afw::image::MaskedImage<ImageT, MaskT> &image,
                lsst::detection::PSF const &psf,
                float const bkgd,
                lsst::pex::policy::Policy const& policy,

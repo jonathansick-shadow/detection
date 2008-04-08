@@ -2,7 +2,6 @@ setupRequired(boost)
 setupRequired(daf_base)
 setupRequired(daf_persistence)
 setupRequired(pex_logging)
-setupRequired(ctrl_harness)
 setupRequired(afw)
 
 envAppend(LD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)

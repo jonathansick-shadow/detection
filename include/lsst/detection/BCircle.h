@@ -1,6 +1,8 @@
 #if !defined(LSST_DETECTION_BCIRCLE_H)
 #define LSST_DETECTION_BCIRCLE_H
 
+#include  <vw/Core/FundamentalTypes.h>
+
 namespace lsst { namespace detection {
 
 /**
@@ -34,7 +36,7 @@ private:
     float _radius;
 };
 
-typedef BCircle<int32, 2> BCircle2i;
+typedef BCircle<vw::int32, 2> BCircle2i;
 
 }}
 #endif

@@ -14,10 +14,10 @@ import os
 from math import *
 import unittest
 import eups
-import lsst.data.tests as tests
+import lsst.utils.tests as tests
 import lsst.pex.logging as logging
-import lsst.afw.Core.afwlib as afw
-import lsst.afw.Display.ds9 as ds9
+import lsst.afw.image as imageLib
+import lsst.afw.display.ds9 as ds9
 import lsst.detection.detectionLib as detection
 import lsst.detection.defects as defects
 
@@ -33,12 +33,12 @@ except NameError:
     display = False
 
     if display:
-        import lsst.afw.Display.ds9 as ds9
+        import lsst.afw.display.ds9 as ds9
 
 class interpolationTestCase(unittest.TestCase):
     """A test case for interpolation"""
     def setUp(self):
-        self.mi = afw.MaskedImageD()
+        self.mi = imageLib.MaskedImageD()
         self.FWHM = 5
         self.psf = detection.dgPSF(self.FWHM/(2*sqrt(2*log(2))))
         if eups.productDir("afwdata"):
