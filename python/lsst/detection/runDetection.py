@@ -8,7 +8,7 @@ import lsst.pex.policy
 import lsst.pex.logging
 import lsst.afw.image as afwImage
 import lsst.afw.detection as afwDet
-import lsst.detection.detectionLib as det
+import lsst.detection as det
 import Detection
 
 defInDir = os.environ.get("FWDATA_DIR", "")

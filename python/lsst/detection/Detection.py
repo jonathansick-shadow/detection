@@ -8,9 +8,9 @@ import math
 import lsst.pex.logging as logging
 import lsst.daf.data as dafData
 import lsst.pex.policy
-import lsst.afw.image as imageLib
+import lsst.afw.image as afwImage
 import lsst.afw.detection as afwDet
-import lsst.detection.detectionLib as det
+import lsst.detection as det
 
 from lsst.pex.logging import Log, ScreenLog
 from lsst.pex.logging import LogRec
@@ -57,7 +57,7 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
     #
 
     varImg = img.getVariance()
-    noise = math.sqrt(imageLib.mean_channel_value(varImg))
+    noise = math.sqrt(afwImage.mean_channel_value(varImg))
 
     logging.Trace("lsst.detection.detection", 3,
         "thresholdSigma = %r; noise = %r PixMin = %r" % (thresh, noise, nPixMin))
@@ -115,7 +115,7 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
         diaPtr.setId(id)
         diaPtr.setFilterId(filterId);
         imgMeasure.measureSource(diaPtr, fpVecPositive[i], 0.0)   # NOTE explicit background of zero used for difference image
-        pixCoord = imageLib.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
+        pixCoord = afwImage.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
         skyCoord = imgWCS.colRowToRaDec(pixCoord)
         diaPtr.setRa(skyCoord.x())
         diaPtr.setDec(skyCoord.y())
@@ -129,7 +129,7 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
         diaPtr.setId(id)
         diaPtr.setFilterId(filterId);
         imgMeasure.measureSource(diaPtr, fpVecNegative[i], 0.0)   # NOTE explicit background of zero used for difference image
-        pixCoord = imageLib.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
+        pixCoord = afwImage.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
         skyCoord = imgWCS.colRowToRaDec(pixCoord)
         diaPtr.setRa(skyCoord.x())
         diaPtr.setDec(skyCoord.y())

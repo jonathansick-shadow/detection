@@ -5,11 +5,10 @@ def runDet(diaPath):
 
     import lsst.daf.data as dafBase
     import lsst.pex.policy
-    import lsst.afw.Core.afwLib as afw
     import lsst.pex.logging
-    import lsst.afw.Core.afwLib as afw
-    import lsst.afw.Core.afwCatalog as afwCat
-    import lsst.detection.detectionLib as det
+    import lsst.afw.image as afwImage
+    import lsst.afw.detection as afwDet
+    import lsst.detection as det
     import Detection
 
     defInDir = os.environ.get("FWDATA_DIR", "")
@@ -22,7 +21,7 @@ def runDet(diaPath):
 
     policyPath = defPolicyPath
 
-    diaExposure = afw.ExposureF()
+    diaExposure = afwImage.ExposureF()
     diaExposure.readFits(diaPath)
     diaMaskedImage = diaExposure.getMaskedImage()
     diaWCS = diaExposure.getWcs()
