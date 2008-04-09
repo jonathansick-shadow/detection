@@ -1,7 +1,4 @@
 setupRequired(boost)
-setupRequired(daf_base)
-setupRequired(daf_persistence)
-setupRequired(pex_logging)
 setupRequired(afw)
 
 envAppend(LD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)
