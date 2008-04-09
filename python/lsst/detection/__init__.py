@@ -1,1 +1,1 @@
-import detectionLib as *
+from detectionLib import *
