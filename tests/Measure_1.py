@@ -91,7 +91,7 @@ class MeasureTestCase(unittest.TestCase):
 
         objects = ds.getFootprints()
         measure = detection.MeasureD(self.ms, "DETECTED")
-        diaptr = afwDet.SourceSharedPtr()
+        diaptr = afwDet.SourcePtr()
 
         for i in range(len(objects)):
             diaptr.setId(i)
