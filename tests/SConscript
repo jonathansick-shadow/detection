@@ -1,9 +1,9 @@
 # -*- python -*-
 Import("env")
 
-env.Program(["Footprint_1.cc"], LIBS=env.getlibs("pex_logging detection"))
-env.Program(["Measure_1.cc"], LIBS=env.getlibs("afw daf_base daf_data daf_persistence pex_logging vw detection"))
-env.Program(["BBox_1.cc"], LIBS=env.getlibs("afw vw"))
+env.Program(["Footprint_1.cc"], LIBS=env.getlibs("detection"))
+env.Program(["Measure_1.cc"], LIBS=env.getlibs("detection"))
+env.Program(["BBox_1.cc"], LIBS=env.getlibs("detection"))
 #
 # Tests
 #

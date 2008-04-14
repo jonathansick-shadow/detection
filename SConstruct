@@ -27,7 +27,7 @@ env = scons.makeEnv("detection",
                      ["afw", "lsst/afw/image/MaskedImage.h", "afw"]
                      ])
 
-env.libs["detection"] +=  env.getlibs("daf_base daf_data daf_persistence pex_logging afw boost wcslib")
+env.libs["detection"] +=  env.getlibs("daf_base daf_data daf_persistence pex_logging pex_exceptions pex_policy security afw boost utils wcslib vw")
 #
 # Build/install things
 #
