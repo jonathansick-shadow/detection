@@ -1,5 +1,5 @@
 import lsst.pex.harness.Stage
-import lsst.afw.Core.afwLib as afw
+import lsst.afw.image
 import lsst.daf.persistence as dafper
 import lsst.pex.logging as logging
 from lsst.pex.logging import Log
@@ -46,7 +46,7 @@ class DetectionStage(lsst.pex.harness.Stage.Stage):
         # Instantiate a Filter object to get the id of filterName
         #
         dbLocation = dafper.LogicalLocation('mysql://lsst10.ncsa.uiuc.edu:3306/test')
-        filterDB = afw.Filter(dbLocation, filterName)
+        filterDB = lsst.afw.image.Filter(dbLocation, filterName)
         filterId = filterDB.getId()
         logging.Trace("lsst.detection.DetectionStage", 3, 'FilterName %s FilterId %d' % (filterName, filterId))
        
