@@ -11,6 +11,7 @@ or
 
 import pdb                              # we may want to say pdb.set_trace()
 import os
+import sys
 from math import *
 import unittest
 import eups
@@ -93,6 +94,8 @@ def suite():
     suites = []
     if eups.productDir("afwdata", "setup"):
         suites += unittest.makeSuite(CosmicRayTestCase)
+    else:
+        print >> sys.stderr, "afwdata is not setup; skipping CosmicRayTestCase"
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
 
