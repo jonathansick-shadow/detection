@@ -44,10 +44,7 @@ class CosmicRayTestCase(unittest.TestCase):
         self.mi = imageLib.MaskedImageD()
         self.FWHM = 5                   # pixels
         self.psf = detection.dgPSF(self.FWHM/(2*sqrt(2*log(2))))
-        if eups.productDir("afwdata"):
-            maskedImage = os.path.join(eups.productDir("afwdata"), "CFHT", "D4", "cal-53535-i-797722_1")
-        else:
-            maskedImage = "/u/rhl/LSST/imageproc-277/diffImage"
+        maskedImage = os.path.join(eups.productDir("afwdata"), "CFHT", "D4", "cal-53535-i-797722_1")
             
         self.mi.readFits(maskedImage)
         self.mi.getMask().addMaskPlane("DETECTED")
@@ -94,7 +91,8 @@ def suite():
     tests.init()
 
     suites = []
-    suites += unittest.makeSuite(CosmicRayTestCase)
+    if eups.productDir("afwdata", "setup"):
+        suites += unittest.makeSuite(CosmicRayTestCase)
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
 
