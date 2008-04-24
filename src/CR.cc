@@ -150,7 +150,8 @@ is_cr_pixel(ImageT *corr,               // corrected value
 
 /************************************************************************************************************/
 //
-// Worker routine to process the pixels adjacent to a span
+// Worker routine to process the pixels adjacent to a span (including the points just
+// to the left and just to the right)
 //
 // Return the number of pixels added to the CR
 //
@@ -169,7 +170,7 @@ static void checkSpanForCRs(Footprint *extras,
                            ) {
     typedef typename lsst::afw::image::MaskedPixelAccessor<ImageT, MaskT> MIAccessorT;
 
-    int const i0 = x0 - 1;
+    int const i0 = x0 - 1;              // start just to the left
     
     MIAccessorT pt_m(image);
     pt_m.advance(i0, row0 - 1);
@@ -403,15 +404,18 @@ lsst::detection::findCosmicRays(MaskedImage<ImageT, MaskT> &image, ///< Image to
                 Span::PtrType const span = *siter;
 
                 /*
-                 * Check the lines above and below the span
+                 * Check the lines above and below the span.  We're going to check a 3x3 region around
+                 * the pixels, so we need a buffer around the edge.  We check the pixels just to the
+                 * left/right of the span, so the buffer needs to be 2 pixels (not just 1) in the
+                 * column direction, but only 1 in the row direction.
                  */
                 int const y = span->getY();
-                if (y < 1 || y >= nrow - 1) {
+                if (y < 2 || y >= nrow - 2) {
                     continue;
                 }
                 int x0 = span->getX0(); int x1 = span->getX1();
-                x0 = (x0 < 1) ? 1 : (x0 >= ncol - 1) ? ncol - 2 : x0;
-                x1 = (x1 < 1) ? 1 : (x1 >= ncol - 1) ? ncol - 2 : x1;
+                x0 = (x0 < 2) ? 2 : (x0 >= ncol - 1) ? ncol - 2 : x0;
+                x1 = (x1 < 2) ? 2 : (x1 >= ncol - 1) ? ncol - 2 : x1;
 
                 checkSpanForCRs(&extra, crpixels, y - 1, x0, x1, image,
                                 min_sigma/2, thres_h, thres_v, thres_d, bkgd, e_per_dn, 0, keep);
