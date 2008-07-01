@@ -414,8 +414,8 @@ lsst::detection::findCosmicRays(MaskedImage<ImageT, MaskT> &image, ///< Image to
                     continue;
                 }
                 int x0 = span->getX0(); int x1 = span->getX1();
-                x0 = (x0 < 2) ? 2 : (x0 >= ncol - 1) ? ncol - 2 : x0;
-                x1 = (x1 < 2) ? 2 : (x1 >= ncol - 1) ? ncol - 2 : x1;
+                x0 = (x0 < 2) ? 2 : (x0 > ncol - 3) ? ncol - 3 : x0;
+                x1 = (x1 < 2) ? 2 : (x1 > ncol - 3) ? ncol - 3 : x1;
 
                 checkSpanForCRs(&extra, crpixels, y - 1, x0, x1, image,
                                 min_sigma/2, thres_h, thres_v, thres_d, bkgd, e_per_dn, 0, keep);
