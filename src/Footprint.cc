@@ -531,7 +531,7 @@ Footprint::PtrType lsst::detection::growFootprint(
     lsst::afw::image::MaskedImage<int, maskPixelType>::MaskedImagePtrT
         midImage(new MaskedImage<int, maskPixelType>(idImage, idMask));
     // Here's the actual grow step
-    lsst::afw::image::MaskedImage<int, maskPixelType> convolvedImage = convolve(*midImage, *circle, 0, false);
+    lsst::afw::image::MaskedImage<int, maskPixelType> convolvedImage = convolveNew(*midImage, *circle, 0, false);
 
     DetectionSet<int, maskPixelType>::PtrType
         grownList(new DetectionSet<int, maskPixelType>(convolvedImage, 0.5, "", 1));
