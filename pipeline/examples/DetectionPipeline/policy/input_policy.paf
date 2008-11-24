@@ -1,0 +1,11 @@
+#<?cfg paf policy ?>
+InputItems: {
+    DifferenceExposure: {
+        Type: "ExposureF"
+        PythonType: "lsst.afw.Core.afwLib.ExposureF"
+        StoragePolicy: {
+            Storage: "FitsStorage"
+            Location: "/home/taxelrod/DC2InputData/Test/cal-53535-i-797722_28_MI_diff"
+        }
+    }
+}

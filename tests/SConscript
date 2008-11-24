@@ -1,9 +1,28 @@
 # -*- python -*-
 Import("env")
 
+env.Program(["Footprint_1.cc"], LIBS=env.getlibs("detection"))
+env.Program(["Measure_1.cc"], LIBS=env.getlibs("detection"))
+env.Program(["BBox_1.cc"], LIBS=env.getlibs("detection"))
+#
+# Tests
+#
 import lsst.tests
+# copy DETECTION_DIR to the test's environment.  This is not needed in sconsUtils 1.19
+if True:
+    import os
+    env["ENV"]["DETECTION_DIR"] = os.environ["DETECTION_DIR"]
 
-tests = lsst.tests.Control(env, ignoreList=[])
+try:                                    # sconsUtils >= 1.17
+    tests = lsst.tests.Control(env,
+                               ignoreList=["Measure_1"],
+                               expectedFailures={"BBox_1": "Problem with single-pixel BBox"})
+except:
+    tests = lsst.tests.Control(env,
+                               ignoreList=["Measure_1", "BBox_1"])
 
+tests.run("*.cc")
+
+env.CheckSwig("python", ilang="c++",includedProducts="utils pex_logging")
 for target in tests.run("*.py"):
-    env.Depends(target, "../python/lsst/ip/diffim/_diffimLib%s" % (env["LDMODULESUFFIX"]))
+    env.Depends(target, "../python/lsst/detection/_detectionLib%s" % (env['LDMODULESUFFIX']))
