@@ -105,13 +105,15 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
 
     imgWCS = differenceImageExposure.getWcs()
 
-    outputDiaSources = afwDet.DiaSourceVec()
+#    outputDiaSources = afwDet.DiaSourceVec()
+    outputDiaSources = afwDet.SourceVec()
 
     imgMeasure = det.MeasureF(img, "FP+")
 
     id = 0
     for i in range(len(fpVecPositive)):
-        diaPtr = afwDet.DiaSourcePtr()
+#        diaPtr = afwDet.DiaSourcePtr()
+        diaPtr = afwDet.SourcePtr()
         diaPtr.setId(id)
         diaPtr.setFilterId(filterId);
         imgMeasure.measureSource(diaPtr, fpVecPositive[i], 0.0)   # NOTE explicit background of zero used for difference image
@@ -125,7 +127,8 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
     imgMeasure = det.MeasureF(img, "FP-")
 
     for i in range(len(fpVecNegative)):
-        diaPtr = afwDet.DiaSourcePtr()
+#        diaPtr = afwDet.DiaSourcePtr()
+        diaPtr = afwDet.SourcePtr()
         diaPtr.setId(id)
         diaPtr.setFilterId(filterId);
         imgMeasure.measureSource(diaPtr, fpVecNegative[i], 0.0)   # NOTE explicit background of zero used for difference image
