@@ -92,7 +92,7 @@ def suite():
     tests.init()
 
     suites = []
-    if eups.productDir("afwdata", "setup"):
+    if eups.productDir("afwdata", eups.Setup):
         suites += unittest.makeSuite(CosmicRayTestCase)
     else:
         print >> sys.stderr, "afwdata is not setup; skipping CosmicRayTestCase"
