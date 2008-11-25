@@ -13,7 +13,7 @@ namespace lsst { namespace detection {
  */
 class PSF : public lsst::daf::data::LsstBase {
 public:
-    typedef boost::shared_ptr<PSF> PtrT;
+    typedef boost::shared_ptr<PSF> Ptr;
 
     explicit PSF();
     virtual ~PSF() {}
@@ -35,7 +35,7 @@ private:
  */
 class dgPSF : public PSF {
 public:
-    typedef boost::shared_ptr<dgPSF> PtrT;
+    typedef boost::shared_ptr<dgPSF> Ptr;
 
     explicit dgPSF() : PSF() {}
     explicit dgPSF(

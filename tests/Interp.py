@@ -16,7 +16,7 @@ import unittest
 import eups
 import lsst.utils.tests as tests
 import lsst.pex.logging as logging
-import lsst.afw.image as imageLib
+import lsst.afw.image as afwImage
 import lsst.afw.display.ds9 as ds9
 import lsst.detection.detectionLib as detection
 import lsst.detection.defects as defects
@@ -38,18 +38,19 @@ except NameError:
 class interpolationTestCase(unittest.TestCase):
     """A test case for interpolation"""
     def setUp(self):
-        self.mi = imageLib.MaskedImageD()
         self.FWHM = 5
         self.psf = detection.dgPSF(self.FWHM/(2*sqrt(2*log(2))))
         if eups.productDir("afwdata"):
-            maskedImage = os.path.join(eups.productDir("afwdata"), "CFHT", "D4", "cal-53535-i-797722_1")
+            maskedImageFile = os.path.join(eups.productDir("afwdata"), "CFHT", "D4", "cal-53535-i-797722_1")
         else:
-            maskedImage = "/u/rhl/LSST/imageproc-277/diffImage"
+            maskedImageFile = "/u/rhl/LSST/imageproc-277/diffImage"
             
-        self.mi.readFits(maskedImage)
+        self.mi = afwImage.MaskedImageD(maskedImageFile)
+        if False:                       # use sub-image?
+            self.mi = self.mi.Factory(self.mi, afwImage.BBox(afwImage.PointI(760, 20), 256, 256))
         self.mi.getMask().addMaskPlane("INTERP")
 
-        self.badPixels = defects.policyToBadRegionList(os.path.join(os.environ["DETECTION_DIR"],
+        self.badPixels = defects.policyToBadRegionList(os.path.join(eups.productDir("detection"),
                                                                     "pipeline/BadPixels.paf"))
 
     def tearDown(self):

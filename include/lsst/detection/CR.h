@@ -5,16 +5,16 @@
 //
 #include <vector>
 #include <lsst/afw/image/MaskedImage.h>
+#include "lsst/afw/detection/Footprint.h"
 #include "lsst/detection/PSF.h"
-#include "lsst/detection/Footprint.h"
 
 class lsst::pex::policy::Policy;
 
 namespace lsst { namespace detection {
 
-template <typename ImageT, typename MaskT>
-std::vector<lsst::detection::Footprint::PtrType>
-findCosmicRays(lsst::afw::image::MaskedImage<ImageT, MaskT> &image,
+template <typename MaskedImageT>
+std::vector<lsst::afw::detection::Footprint::Ptr>
+findCosmicRays(MaskedImageT& image,
                lsst::detection::PSF const &psf,
                float const bkgd,
                lsst::pex::policy::Policy const& policy,

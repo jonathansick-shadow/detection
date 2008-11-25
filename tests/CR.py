@@ -18,7 +18,9 @@ import eups
 import lsst.utils.tests as tests
 import lsst.pex.logging as logging
 import lsst.pex.policy as policy
-import lsst.afw.image.imageLib as imageLib
+import lsst.afw.image.imageLib as afwImage
+import lsst.afw.math.mathLib as afwMath
+import lsst.afw.detection.detectionLib as afwDetection
 import lsst.afw.display.ds9 as ds9
 import lsst.detection.detectionLib as detection
 import lsst.detection.defects as defects
@@ -42,17 +44,21 @@ except NameError:
 class CosmicRayTestCase(unittest.TestCase):
     """A test case for Cosmic Ray detection"""
     def setUp(self):
-        self.mi = imageLib.MaskedImageD()
         self.FWHM = 5                   # pixels
         self.psf = detection.dgPSF(self.FWHM/(2*sqrt(2*log(2))))
-        maskedImage = os.path.join(eups.productDir("afwdata"), "CFHT", "D4", "cal-53535-i-797722_1")
             
-        self.mi.readFits(maskedImage)
+        self.mi = afwImage.MaskedImageF(os.path.join(eups.productDir("afwdata"), "CFHT", "D4", "cal-53535-i-797722_1"))
+
+        if False:                           # use full image
+            self.nCR = 1094                 # number of CRs we should detect
+        else:                               # use sub-image
+            self.mi = self.mi.Factory(self.mi, afwImage.BBox(afwImage.PointI(824, 140), 256, 256))
+            self.nCR = 13
+
         self.mi.getMask().addMaskPlane("DETECTED")
 
-        # I'd use eups.productDir("detection", "setup"), except that there's a bug in eups.py with listing
-        # -r setups; fixed in v0_7_47
-        self.policy = policy.Policy.createPolicy(os.path.join(os.environ["DETECTION_DIR"], "pipeline/CosmicRays.paf"))
+        self.policy = policy.Policy.createPolicy(os.path.join(eups.productDir("detection"),
+                                                              "pipeline", "CosmicRays.paf"))
 
     def tearDown(self):
         del self.mi
@@ -65,24 +71,27 @@ class CosmicRayTestCase(unittest.TestCase):
         if display:
             frame = 0
             ds9.mtv(self.mi, frame=frame) # raw frame
-            ds9.pan(260, 944)
+            if self.mi.getX0() == 0:
+                ds9.pan(944, 260)
         #
         # Mask known bad pixels
         #
         badPixels = defects.policyToBadRegionList(os.path.join(os.environ["DETECTION_DIR"], "pipeline/BadPixels.paf"))
         detection.interpolateOverDefects(self.mi, self.psf, badPixels)
 
-        background = imageLib.mean_channel_value(self.mi.getImage())
+        background = afwMath.StatisticsF(self.mi.getImage(), afwMath.MEAN).getValue(afwMath.MEAN)
         crs = detection.findCosmicRays(self.mi, self.psf, background, self.policy)
 
         if display:
             ds9.mtv(self.mi.getImage(), frame=frame+1)
-            ds9.pan(260, 944)
+            if self.mi.getX0() == 0:
+                ds9.pan(944, 260)
 
             ds9.mtv(self.mi, frame=frame+2)
-            ds9.pan(260, 944)
+            if self.mi.getX0() == 0:
+                ds9.pan(944, 260)
 
-        self.assertEqual(len(crs), 1094)
+        self.assertEqual(len(crs), self.nCR)
         print "Detected %d CRs" % len(crs)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -92,7 +101,7 @@ def suite():
     tests.init()
 
     suites = []
-    if eups.productDir("afwdata", "setup"):
+    if eups.productDir("afwdata"):
         suites += unittest.makeSuite(CosmicRayTestCase)
     else:
         print >> sys.stderr, "afwdata is not setup; skipping CosmicRayTestCase"

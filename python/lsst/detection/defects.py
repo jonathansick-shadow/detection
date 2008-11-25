@@ -1,6 +1,6 @@
 """Support for image defects"""
 
-import lsst.afw.image.imageLib as imageLib
+import lsst.afw.image.imageLib as afwImage
 import lsst.pex.policy as policy
 import lsst.detection.detectionLib as detection
 
@@ -12,20 +12,20 @@ def policyToBadRegionList(policyFile):
     
     d = badPixelsPolicy.getArray("Defects")
     for reg in d:
-        col0 = reg.get("col0")
-        ncol = reg.get("ncol")
-        if not ncol:
-            col1 = reg.get("col1")
-            ncol = col1 - col0 - 1
+        x0 = reg.get("x0")
+        width = reg.get("width")
+        if not width:
+            x1 = reg.get("x1")
+            width = x1 - x0 - 1
 
-        row0 = reg.get("row0")
-        nrow = reg.get("nrow")
-        if not nrow:
-            row1 = reg.get("row1")
-            nrow = row1 - row0 - 1
+        y0 = reg.get("y0")
+        height = reg.get("height")
+        if not height:
+            y1 = reg.get("y1")
+            height = y1 - y0 - 1
 
-        bbox = imageLib.BBox2i(col0, row0, ncol, nrow)
-        badPixels.push_back(detection.DefectPtrT(detection.Defect(bbox)))
+        bbox = afwImage.BBox(afwImage.PointI(x0, y0), width, height)
+        badPixels.push_back(detection.Defect(bbox))
 
     del badPixelsPolicy
 

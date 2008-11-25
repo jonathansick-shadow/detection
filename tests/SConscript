@@ -1,25 +1,14 @@
 # -*- python -*-
 Import("env")
 
-env.Program(["Footprint_1.cc"], LIBS=env.getlibs("detection"))
-env.Program(["Measure_1.cc"], LIBS=env.getlibs("detection"))
-env.Program(["BBox_1.cc"], LIBS=env.getlibs("detection"))
 #
 # Tests
 #
 import lsst.tests
-# copy DETECTION_DIR to the test's environment.  This is not needed in sconsUtils 1.19
-if True:
-    import os
-    env["ENV"]["DETECTION_DIR"] = os.environ["DETECTION_DIR"]
 
-try:                                    # sconsUtils >= 1.17
-    tests = lsst.tests.Control(env,
-                               ignoreList=["Measure_1"],
-                               expectedFailures={"BBox_1": "Problem with single-pixel BBox"})
-except:
-    tests = lsst.tests.Control(env,
-                               ignoreList=["Measure_1", "BBox_1"])
+tests = lsst.tests.Control(env,
+                           ignoreList=[],
+                           expectedFailures={})
 
 tests.run("*.cc")
 

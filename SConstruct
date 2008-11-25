@@ -10,8 +10,6 @@ env = scons.makeEnv("detection",
                     [["boost", "boost/version.hpp", "boost_system:C++"],
                      ["boost", "boost/version.hpp", "boost_filesystem:C++"],
                      ["boost", "boost/regex.hpp", "boost_regex:C++"],
-                     ["vw", "vw/Core.h", "vw:C++"],
-                     ["vw", "vw/Core.h", "vwCore:C++"],
                      ["python", "Python.h"],
 		     ["m", "math.h", "m", "sqrt"],
 		     ["cfitsio", "fitsio.h", "cfitsio", "ffopen"],
@@ -28,7 +26,7 @@ env = scons.makeEnv("detection",
                      ["afw", "lsst/afw/image/MaskedImage.h", "afw"]
                      ])
 
-env.libs["detection"] +=  env.getlibs("daf_base daf_data daf_persistence pex_logging pex_exceptions pex_policy security afw boost utils wcslib vw")
+env.libs["detection"] +=  env.getlibs("daf_base daf_data daf_persistence pex_logging pex_exceptions pex_policy security afw boost utils wcslib")
 #
 # Build/install things
 #

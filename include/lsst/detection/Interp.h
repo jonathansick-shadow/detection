@@ -24,9 +24,9 @@ namespace lsst { namespace detection { namespace interp {
      */
     double const min_2Gaussian_bias = -0.5641895835;	///< The mean value of the minimum of two N(0,1) variates
     
-    template <typename ImageT, typename MaskT>
-    ImageT singlePixel(int x, int y, lsst::afw::image::MaskedImage<ImageT, MaskT> const & image,
-                       bool horizontal, ImageT minval);
+    template <typename MaskedImageT>
+    typename MaskedImageT::Image::Pixel singlePixel(int x, int y, MaskedImageT const& image,
+                                                    bool horizontal, double minval);
 }}}
 
 namespace lsst { namespace detection {
@@ -36,7 +36,7 @@ namespace lsst { namespace detection {
  */
 class Defect {
 public:
-    typedef boost::shared_ptr<Defect> PtrT; //!< shared pointer to Defect
+    typedef boost::shared_ptr<Defect> Ptr; //!< shared pointer to Defect
     
     enum DefectPosition {
         LEFT = 1,                       //!< defect is at left boundary
@@ -53,7 +53,7 @@ public:
 
     enum { WIDE_DEFECT = 11 };          //!< minimum width of a WIDE defect
     
-    explicit Defect(const vw::BBox2i& bbox = vw::BBox2i(0, 0, 0, 0) //!< Region's bounding box
+    explicit Defect(const lsst::afw::image::BBox& bbox = lsst::afw::image::BBox() //!< Region's bounding box
                       ) :
         _bbox(bbox), _pos(static_cast<DefectPosition>(0)), _type(0)
         {
@@ -70,24 +70,32 @@ public:
 
     unsigned int getType() const { return _type; } //!< Return the defect's interpolation type
     DefectPosition getPos() const { return _pos; } //!< Return the position of the defect
-    vw::BBox2i const & getBBox() const { return _bbox; } //!< Return the Defect's bounding box
-    int const & getX0() const { return _bbox.min().x(); } //!< Return the Defect's left column
-    int const & getX1() const { return _bbox.max().x(); } //!< Return one beyond the Defect's right column
-    int const & getY0() const { return _bbox.min().y(); } //!< Return the Defect's bottom row
-    int const & getY1() const { return _bbox.max().y(); } //!< Return one beyond the Defect's top row    
-    
+    lsst::afw::image::BBox const & getBBox() const { return _bbox; } //!< Return the Defect's bounding box
+    int const getX0() const { return _bbox.getX0(); } //!< Return the Defect's left column
+    int const getX1() const { return _bbox.getX1(); } //!< Return the Defect's right column
+    int const getY0() const { return _bbox.getY0(); } //!< Return the Defect's bottom row
+    int const getY1() const { return _bbox.getY1(); } //!< Return the Defect's top row    
+
+    /**
+     * Offset a Defect by <tt>(dx, dy)</tt>
+     */
+    void shift(int dx,                 //!< How much to move defect in column direction
+               int dy                  //!< How much to move in row direction
+              ) {
+        _bbox.shift(dx, dy);
+    }
 private:
-    vw::BBox2i _bbox;                   //!< Bounding box for bad pixels
+    lsst::afw::image::BBox _bbox;                   //!< Bounding box for bad pixels
     DefectPosition _pos;                //!< Position of defect
     unsigned int _type;                 //!< Type of defect
 };
 
 class PSF;
     
-template <typename ImageT, typename MaskT>
-void interpolateOverDefects(lsst::afw::image::MaskedImage<ImageT, MaskT> &image,
-                            PSF const &psf,
-                            std::vector<Defect::PtrT> &badList
+template <typename MaskedImageT>
+void interpolateOverDefects(MaskedImageT &image,
+                            detection::PSF const &psf,
+                            std::vector<Defect::Ptr> &badList
                            );
 
 }}

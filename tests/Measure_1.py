@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Tests for Footprints, DetectionSets, and Measure
 
@@ -13,7 +14,7 @@ import unittest
 import lsst.utils.tests as tests
 import lsst.pex.logging as logging
 import lsst.afw.image as imageLib
-import lsst.afw.detection as afwDet
+import lsst.afw.detection as afwDetection
 import lsst.detection.detectionLib as detection
 
 try:
@@ -59,7 +60,7 @@ class MeasureTestCase(unittest.TestCase):
             return True
     
     def setUp(self):
-        self.ms = imageLib.MaskedImageD(12, 8)
+        self.ms = imageLib.MaskedImageF(12, 8)
         im = self.ms.getImage()
         #
         # Objects that we should detect
@@ -83,15 +84,15 @@ class MeasureTestCase(unittest.TestCase):
         ycentroid = [2.0, 5.4, 6.0]
         flux = [50.0, 100.0, 20.0]
         
-        ds = detection.DetectionSetD(self.ms, detection.Threshold(10), "DETECTED")
+        ds = afwDetection.DetectionSetF(self.ms, afwDetection.Threshold(10), "DETECTED")
 
         if display:
             import lsst.afw.display.ds9 as ds9
             ds9.mtv(self.ms, frame=0)
 
         objects = ds.getFootprints()
-        measure = detection.MeasureD(self.ms, "DETECTED")
-        diaptr = afwDet.SourcePtr()
+        measure = detection.MeasureF(self.ms)
+        diaptr = afwDetection.Source()
 
         for i in range(len(objects)):
             diaptr.setId(i)
