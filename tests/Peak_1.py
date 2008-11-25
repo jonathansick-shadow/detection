@@ -13,7 +13,7 @@ import unittest
 import lsst.utils.tests as tests
 import lsst.pex.logging as logging
 import lsst.afw.image.imageLib as imageLib
-import lsst.detection.detectionLib as detection
+import lsst.afw.detection.detectionLib as detection
 
 try:
     type(verbose)
@@ -73,5 +73,9 @@ def suite():
     suites += unittest.makeSuite(tests.MemoryTestCase)
     return unittest.TestSuite(suites)
 
+def run(exit=False):
+    """Run the tests"""
+    tests.run(suite(), exit)
+
 if __name__ == "__main__":
-    unittest.main()
+    run(True)
