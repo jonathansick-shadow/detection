@@ -1,0 +1,30 @@
+
+# /
+/.sconsign.dblite
+/.sconf_temp
+/config.log
+/TAGS
+
+# /doc/
+/doc/htmlDir
+
+# /lib/
+/lib/*.dylib
+/lib/*.so
+
+# /python/lsst/detection/
+/python/lsst/detection/detectionLib_wrap.cc
+/python/lsst/detection/detectionLib_wrap.os
+/python/lsst/detection/_detectionLib.so
+/python/lsst/detection/detectionLib.py
+/python/lsst/detection/*.pyc
+
+# /src/
+/src/*.os
+
+# /tests/
+/tests/.tests
+/tests/BBox_1
+/tests/Footprint_1
+/tests/Measure_1
+/tests/*.pyc
