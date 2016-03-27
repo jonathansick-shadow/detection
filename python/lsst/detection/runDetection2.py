@@ -13,11 +13,11 @@ def runDet(diaPath):
 
     defInDir = os.environ.get("FWDATA_DIR", "")
     moduleDir = os.path.split(__file__)[0]
-    appDir = os.path.normpath(os.path.join("../../../",moduleDir))
+    appDir = os.path.normpath(os.path.join("../../../", moduleDir))
 
     defDiaPath = os.path.join(defInDir, "871034p_1_MI")
     defPolicyPath = os.path.join(appDir, "pipeline/DetectionStagePolicy.paf")
-    defVerbosity = 5 # change to 0 once this all works to hide all messages
+    defVerbosity = 5  # change to 0 once this all works to hide all messages
 
     policyPath = defPolicyPath
 
@@ -37,7 +37,7 @@ def runDet(diaPath):
 
 def testIt(diaPath):
     import lsst.daf.data as dafBase
-    
+
     runDet(diaPath)
     # check for memory leaks
     memId0 = 0

@@ -13,12 +13,12 @@ import Detection
 
 defInDir = os.environ.get("FWDATA_DIR", "")
 moduleDir = os.path.split(__file__)[0]
-appDir = os.path.normpath(os.path.join("../../../",moduleDir))
+appDir = os.path.normpath(os.path.join("../../../", moduleDir))
 
 #defDiaPath = os.path.join(defInDir, "871034p_1_MI")
 defDiaPath = "/home/tsa/DC2OutputData/704893p_01_diff"
 defPolicyPath = "/home/tsa/DMS/detection/trunk/pipeline/examples/DetectionPipeline/policy/DetectionStagePolicy.paf"
-defVerbosity = 5 # change to 0 once this all works to hide all messages
+defVerbosity = 5  # change to 0 once this all works to hide all messages
 
 usage = """usage: %%prog [options] [diaImage [policyFile]]]
 Note:
@@ -36,6 +36,7 @@ parser.add_option("-d", "--debugIO",
                   action="store_true", default=False,
                   help="write diagnostic intermediate files")
 (options, args) = parser.parse_args()
+
 
 def getArg(ind, defValue):
     if ind < len(args):

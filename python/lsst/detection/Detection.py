@@ -18,14 +18,15 @@ from lsst.daf.base import DataProperty
 
 __all__ = ["detection"]
 
+
 def detection(differenceImageExposure, policy, filterId, useLog=None, footprintList=None):
     """Detect and measure objects in an incoming difference image Exposure
-    
+
     Inputs:
     - differenceImageExposure: an lsst.afw.image.Exposure containing a difference MaskedImage and WCS
     - policy: the policy; required elements are...?
     - footprintList: a sequence of detection footprints on which to force measurement
-        
+
     Returns:
     - an lsst.afw.detection.SourceVector
     """
@@ -35,7 +36,7 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
         useLog.setScreenVerbose(True)
 
     logging.Trace("lsst.detection.detection", 3,
-        "filterId = %d" % (filterId))
+                  "filterId = %d" % (filterId))
 
     ###########
     #
@@ -60,43 +61,44 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
     noise = math.sqrt(afwImage.mean_channel_value(varImg))
 
     logging.Trace("lsst.detection.detection", 3,
-        "thresholdSigma = %r; noise = %r PixMin = %r" % (thresh, noise, nPixMin))
+                  "thresholdSigma = %r; noise = %r PixMin = %r" % (thresh, noise, nPixMin))
 
     LogRec(useLog, Log.INFO) \
-                   <<  "Threshold computation" \
-                   << DataProperty("thresholdSigma", thresh) \
-                   << DataProperty("noise", noise) \
-                   << DataProperty("threshold", thresh*noise) \
-                   << LogRec.endr
+        <<  "Threshold computation" \
+        << DataProperty("thresholdSigma", thresh) \
+        << DataProperty("noise", noise) \
+        << DataProperty("threshold", thresh*noise) \
+        << LogRec.endr
 
     ###########
     #
     # Build the DetectionSet for positive sources
     #
 
-    dsPositive = det.DetectionSetF(img, det.Threshold(thresh*noise, det.Threshold.VALUE, True), "FP+", nPixMin)
+    dsPositive = det.DetectionSetF(img, det.Threshold(
+        thresh*noise, det.Threshold.VALUE, True), "FP+", nPixMin)
     fpVecPositive = dsPositive.getFootprints()
     print "Positive detections: ", len(fpVecPositive)
 
     LogRec(useLog, Log.INFO) \
-                   <<  "Positive detections" \
-                   << DataProperty("nPositive", len(fpVecPositive)) \
-                   << LogRec.endr
+        <<  "Positive detections" \
+        << DataProperty("nPositive", len(fpVecPositive)) \
+        << LogRec.endr
 
     ###########
     #
     # Build the DetectionSet for negative sources
     #
 
-    dsNegative = det.DetectionSetF(img, det.Threshold(thresh*noise, det.Threshold.VALUE, False), "FP-", nPixMin)
+    dsNegative = det.DetectionSetF(img, det.Threshold(
+        thresh*noise, det.Threshold.VALUE, False), "FP-", nPixMin)
     fpVecNegative = dsNegative.getFootprints()
     print "Negative detections: ", len(fpVecNegative)
 
     LogRec(useLog, Log.INFO) \
-                   <<  "Negative detections" \
-                   << DataProperty("nNegative", len(fpVecNegative)) \
-                   << LogRec.endr
-
+        <<  "Negative detections" \
+        << DataProperty("nNegative", len(fpVecNegative)) \
+        << LogRec.endr
 
     ###########
     #
@@ -113,22 +115,24 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
     for i in range(len(fpVecPositive)):
         diaPtr = afwDet.DiaSourcePtr()
         diaPtr.setId(id)
-        diaPtr.setFilterId(filterId);
-        imgMeasure.measureSource(diaPtr, fpVecPositive[i], 0.0)   # NOTE explicit background of zero used for difference image
+        diaPtr.setFilterId(filterId)
+        # NOTE explicit background of zero used for difference image
+        imgMeasure.measureSource(diaPtr, fpVecPositive[i], 0.0)
         pixCoord = afwImage.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
         skyCoord = imgWCS.colRowToRaDec(pixCoord)
         diaPtr.setRa(skyCoord.x())
         diaPtr.setDec(skyCoord.y())
         outputDiaSources.push_back(diaPtr.get())
         id += 1
- 
+
     imgMeasure = det.MeasureF(img, "FP-")
 
     for i in range(len(fpVecNegative)):
         diaPtr = afwDet.DiaSourcePtr()
         diaPtr.setId(id)
-        diaPtr.setFilterId(filterId);
-        imgMeasure.measureSource(diaPtr, fpVecNegative[i], 0.0)   # NOTE explicit background of zero used for difference image
+        diaPtr.setFilterId(filterId)
+        # NOTE explicit background of zero used for difference image
+        imgMeasure.measureSource(diaPtr, fpVecNegative[i], 0.0)
         pixCoord = afwImage.Coord2D(diaPtr.getColc(), diaPtr.getRowc())
         skyCoord = imgWCS.colRowToRaDec(pixCoord)
         diaPtr.setRa(skyCoord.x())
@@ -140,6 +144,5 @@ def detection(differenceImageExposure, policy, filterId, useLog=None, footprintL
     #
     # Return the DiaSources
     #
-
 
     return outputDiaSources

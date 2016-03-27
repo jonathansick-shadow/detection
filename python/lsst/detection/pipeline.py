@@ -9,7 +9,9 @@ import Detection
 
 __all__ = ["DetectionStage"]
 
+
 class DetectionStage(lsst.pex.harness.Stage.Stage):
+
     def __init__(self, stageId = -1, policy = None):
 
         lsst.pex.harness.Stage.Stage.__init__(self, stageId, policy)
@@ -18,7 +20,8 @@ class DetectionStage(lsst.pex.harness.Stage.Stage):
     def process(self):
 
         logging.Trace_setVerbosity("lsst.detection", 5)
-        logging.Trace("lsst.detection.DetectionStage", 3, 'Python DetectionStage process : _rank %i stageId %d' % (self._rank, self.stageId))
+        logging.Trace("lsst.detection.DetectionStage", 3,
+                      'Python DetectionStage process : _rank %i stageId %d' % (self._rank, self.stageId))
         activeClipboard = self.inputQueue.getNextDataset()
 
         ###########
@@ -37,19 +40,20 @@ class DetectionStage(lsst.pex.harness.Stage.Stage):
         # Log the beginning of Detection stage for this slice
         #
         LogRec(self.detectionLog, Log.INFO) \
-                                  <<  "Began detection stage" \
-                                  << DataProperty("exposureId", exposureId) \
-                                  << DataProperty("visitTime", visitTime) \
-                                  << DataProperty("filterName", filterName) \
-                                  << LogRec.endr
+            <<  "Began detection stage" \
+            << DataProperty("exposureId", exposureId) \
+            << DataProperty("visitTime", visitTime) \
+            << DataProperty("filterName", filterName) \
+            << LogRec.endr
         #
         # Instantiate a Filter object to get the id of filterName
         #
         dbLocation = dafper.LogicalLocation('mysql://lsst10.ncsa.uiuc.edu:3306/test')
         filterDB = lsst.afw.image.Filter(dbLocation, filterName)
         filterId = filterDB.getId()
-        logging.Trace("lsst.detection.DetectionStage", 3, 'FilterName %s FilterId %d' % (filterName, filterId))
-       
+        logging.Trace("lsst.detection.DetectionStage", 3,
+                      'FilterName %s FilterId %d' % (filterName, filterId))
+
         differenceImageExposure = activeClipboard.get('DifferenceExposure')
 
         diaSourceCollection = Detection.detection(
@@ -65,5 +69,5 @@ class DetectionStage(lsst.pex.harness.Stage.Stage):
         # Post results to clipboard
         #
         activeClipboard.put('DiaSources', diaSourceCollection)
-        
+
         self.outputQueue.addDataset(activeClipboard)
